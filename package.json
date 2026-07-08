@@ -3,5 +3,6 @@
   "version": "1.0.0",
   "description": "Volume requests: users ask for comics, curators approve — with votes, notes, and auto-approve",
   "type": "module",
-  "private": true
+  "private": true,
+  "license": "GPL-3.0-or-later"
 }

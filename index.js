@@ -13,6 +13,7 @@ import { ensureCvIssueRow, queueIssues } from '../../src/db.js';
 import { roleGrants, CORE_PERMISSIONS } from '../../src/users.js';
 import { registeredPermissions } from '../../src/plugins.js';
 import { openRequestsStore } from './store.js';
+import { isWestern } from './western.js';
 
 export default function register(api) {
   api.registerClientAsset({ js: 'client/requests.js', css: 'client/requests.css' });
@@ -36,7 +37,13 @@ export default function register(api) {
 
   api.registerSettings({
     requestsAutoApprove: { type: 'bool' }, // every request is approved + added instantly
+    requestsWesternOnly: { type: 'bool' }, // only Western-publisher volumes may be requested
   });
+
+  // Is this volume requestable under the current policy? With "Western only"
+  // on, a volume is allowed only if its ComicVine publisher is on the Western
+  // allowlist (see western.js) — foreign AND unknown publishers are blocked.
+  const requestable = (vol) => !config.requestsWesternOnly || isWestern(vol?.publisher);
 
   const store = openRequestsStore(config.dbPath);
   const cv = () => makeCvClient(config);
@@ -66,11 +73,13 @@ export default function register(api) {
   const manages = (req) => grants(req, 'requests.manage');
 
   // Queue every missing issue of the (just-added) volume and kick the core
-  // download worker — but ONLY when the acting user's own role may download.
-  // The requester acts on auto-approve, the approver on a manual approve; a
-  // role without downloads.grab gets the add and nothing more.
-  function queueVolumeDownloads(req, cvVolumeId) {
-    if (!grants(req, 'downloads.grab')) return 0;
+  // download worker. Normally gated by the acting user's own downloads.grab —
+  // the requester on auto-approve, the approver on a manual approve. `force`
+  // bypasses that gate: it's set when the SERVER is configured to auto-download
+  // added volumes (autoDownloadOnAdd), an admin-level automation that shouldn't
+  // hinge on which user happened to trigger it.
+  function queueVolumeDownloads(req, cvVolumeId, { force = false } = {}) {
+    if (!force && !grants(req, 'downloads.grab')) return 0;
     const core = requireCoreDb();
     const sid = core.prepare('SELECT id FROM series WHERE cv_id = ?').get(cvVolumeId)?.id;
     if (!sid) return 0;
@@ -108,8 +117,11 @@ export default function register(api) {
     if (!q) return res.json({ results: [] });
     try {
       const found = await cv().search(q);
+      // "Western only" hides non-Western volumes from the results outright, so
+      // they can't be requested (the create route enforces it too).
+      const allowed = config.requestsWesternOnly ? found.filter(requestable) : found;
       res.json({
-        results: found.map((v) => {
+        results: allowed.map((v) => {
           const lib = store.libraryState(v.id);
           const open = store.openFor(v.id);
           return {
@@ -136,13 +148,21 @@ export default function register(api) {
     }
     try {
       const vol = await cv().volume(cvId);
+      // Enforce the Western-only policy server-side (the search hides these, but
+      // a crafted request would otherwise slip through).
+      if (!requestable(vol)) {
+        return res.status(403).json({ error: 'only Western comics can be requested on this server' });
+      }
       const { request, seconded } = store.create(uid(req), uname(req), vol, (req.body || {}).note);
       if (seconded) return res.json({ request, seconded: true });
       if (config.requestsAutoApprove) {
         const r = await addSeriesFromCv(requireCoreDb(), cv(), cvId);
         store.approve(request.id, 'auto-approve');
-        // Downloads start server-side under the REQUESTER's own permission.
-        const queued = queueVolumeDownloads(req, cvId);
+        // With auto-download-on-add configured, missing issues download for
+        // every auto-approved request regardless of the requester's own
+        // permission (it's a server-wide automation). Otherwise they still
+        // download when the requester's role may grab.
+        const queued = queueVolumeDownloads(req, cvId, { force: !!config.autoDownloadOnAdd });
         notify(req, { type: 'request.approved', category: 'request', level: 'success', title: 'Request added', body: `${vol.name} was added to the library.` });
         return res.json({ request: store.get(request.id, uid(req)), autoApproved: true, seriesId: r.seriesId, queued });
       }

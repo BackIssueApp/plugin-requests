@@ -37,7 +37,11 @@
       block.innerHTML =
         '<div class="src-toggle">' +
           '<label class="switch"><input id="set-requestsAutoApprove" type="checkbox"><span class="switch__track"></span></label>' +
-          '<div class="src-toggle__text"><b>Requests: auto-approve</b><span class="modal__note src-toggle__note">Every volume request is approved and added to the library instantly — no review queue. Off = roles with “Manage requests” approve or decline each one.</span></div>' +
+          '<div class="src-toggle__text"><b>Requests: auto-approve</b><span class="modal__note src-toggle__note">Every volume request is approved and added to the library instantly — no review queue. Off = roles with “Manage requests” approve or decline each one. When <b>Download on add</b> (Downloading settings) is also on, auto-approved requests download their missing issues automatically, regardless of who requested them.</span></div>' +
+        '</div>' +
+        '<div class="src-toggle">' +
+          '<label class="switch"><input id="set-requestsWesternOnly" type="checkbox"><span class="switch__track"></span></label>' +
+          '<div class="src-toggle__text"><b>Requests: Western comics only</b><span class="modal__note src-toggle__note">Only volumes from Western (US/UK) publishers can be searched and requested — manga and foreign-language titles are hidden. Uses a publisher allowlist.</span></div>' +
         '</div>';
       setSlot.appendChild(block);
     }

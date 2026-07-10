@@ -19,4 +19,12 @@ and who can approve are two grantable permissions (*Create requests* /
 flows into the notification centre: reviewers hear about new requests,
 requesters hear about verdicts.
 
+Two options live in **Settings** (the plugin's block in the Sources area):
+
+- **Auto-approve** — every request is approved and added instantly, no queue.
+  When the core **Download on add** setting is also on, auto-approved requests
+  download their missing issues automatically, whoever requested them.
+- **Western comics only** — restrict search and requests to Western (US/UK)
+  publishers via an allowlist; manga and foreign-language titles are hidden.
+
 Full guide: <https://backissue.app/requests>

@@ -181,3 +181,22 @@ test('routes: viewer files + votes but cannot decide; trusted approves', async (
     try { rm(); } catch { /* Windows file locks — temp dir reaped by OS */ }
   }
 });
+
+import { isWestern } from '../western.js';
+
+test('western allowlist: Western publishers pass; foreign and unknown are blocked', () => {
+  // On the allowlist (incl. CV suffix folding).
+  assert.ok(isWestern('DC Comics'));
+  assert.ok(isWestern('Marvel'));
+  assert.ok(isWestern('Image Comics'));
+  assert.ok(isWestern('BOOM! Studios'));
+  assert.ok(isWestern('Dark Horse'), 'suffix "Comics" folded');
+  // Manga / foreign houses are not on the allowlist.
+  assert.ok(!isWestern('Shueisha'));
+  assert.ok(!isWestern('Kodansha'));
+  assert.ok(!isWestern('VIZ Media'));
+  // Unknown / missing publishers are blocked (allowlist, not blocklist).
+  assert.ok(!isWestern('Some Tiny Unknown Press'));
+  assert.ok(!isWestern(''));
+  assert.ok(!isWestern(null));
+});

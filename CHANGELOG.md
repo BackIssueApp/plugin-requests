@@ -8,6 +8,16 @@ by the maintainers when changes merge, so concurrent PRs don't conflict here.
 
 ## [Unreleased]
 
+## [1.2.2] — 2026-07-11
+
+### Fixed
+- **No collections** now filters the request **search** results too, not just
+  the request-create step. The search pulls volume descriptions when the filter
+  is on, so a collected edition with a plain title (e.g. *God of War: Fallen
+  God*'s trade paperback) is hidden from results instead of appearing and only
+  being rejected when requested. (Needs a BackIssue core that supports
+  description-in-search; older cores still enforce it at request time.)
+
 ## [1.2.1] — 2026-07-11
 
 ### Fixed

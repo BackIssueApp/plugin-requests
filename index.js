@@ -122,7 +122,10 @@ export default function register(api) {
     const q = String(req.query.q || '').trim();
     if (!q) return res.json({ results: [] });
     try {
-      const found = await cv().search(q);
+      // No-collections detection leans on the volume blurb, so pull descriptions
+      // for the search too (a collected edition often only reveals itself there —
+      // e.g. "Trade paperback collecting …" on a plainly-named volume).
+      const found = await cv().search(q, { withDescription: !!config.requestsNoCollections });
       // Policy filters (Western-only / no-collections) hide disallowed volumes
       // from the results outright, so they can't be requested (the create route
       // enforces the same, since a crafted request would bypass the UI).

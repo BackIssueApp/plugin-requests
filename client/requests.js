@@ -42,6 +42,10 @@
         '<div class="src-toggle">' +
           '<label class="switch"><input id="set-requestsWesternOnly" type="checkbox"><span class="switch__track"></span></label>' +
           '<div class="src-toggle__text"><b>Requests: Western comics only</b><span class="modal__note src-toggle__note">Only volumes from Western (US/UK) publishers can be searched and requested — manga and foreign-language titles are hidden. Uses a publisher allowlist.</span></div>' +
+        '</div>' +
+        '<div class="src-toggle">' +
+          '<label class="switch"><input id="set-requestsNoCollections" type="checkbox"><span class="switch__track"></span></label>' +
+          '<div class="src-toggle__text"><b>Requests: no collections</b><span class="modal__note src-toggle__note">Hide and block collected editions — trade paperbacks, hardcovers, omnibuses, “Complete” collections and the like — so only single-issue series can be requested. Detected from the volume’s title and description (ComicVine has no format field), so it catches the vast majority but isn’t perfect.</span></div>' +
         '</div>';
       setSlot.appendChild(block);
     }

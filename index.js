@@ -14,6 +14,7 @@ import { roleGrants, CORE_PERMISSIONS } from '../../src/users.js';
 import { registeredPermissions } from '../../src/plugins.js';
 import { openRequestsStore } from './store.js';
 import { isWestern } from './western.js';
+import { isCollection } from './collections.js';
 
 export default function register(api) {
   api.registerClientAsset({ js: 'client/requests.js', css: 'client/requests.css' });
@@ -38,12 +39,17 @@ export default function register(api) {
   api.registerSettings({
     requestsAutoApprove: { type: 'bool' }, // every request is approved + added instantly
     requestsWesternOnly: { type: 'bool' }, // only Western-publisher volumes may be requested
+    requestsNoCollections: { type: 'bool' }, // block TPBs / hardcovers / omnibuses / other compilations
   });
 
-  // Is this volume requestable under the current policy? With "Western only"
-  // on, a volume is allowed only if its ComicVine publisher is on the Western
-  // allowlist (see western.js) — foreign AND unknown publishers are blocked.
-  const requestable = (vol) => !config.requestsWesternOnly || isWestern(vol?.publisher);
+  // Is this volume requestable under the current policy? "Western only" allows a
+  // volume only if its publisher is on the Western allowlist (western.js);
+  // "No collections" blocks collected editions (TPB/HC/omnibus/…) detected
+  // heuristically (collections.js). Foreign AND unknown fail Western; the
+  // heuristic errs toward the strong signals.
+  const requestable = (vol) =>
+    (!config.requestsWesternOnly || isWestern(vol?.publisher)) &&
+    (!config.requestsNoCollections || !isCollection(vol));
 
   const store = openRequestsStore(config.dbPath);
   const cv = () => makeCvClient(config);
@@ -117,9 +123,11 @@ export default function register(api) {
     if (!q) return res.json({ results: [] });
     try {
       const found = await cv().search(q);
-      // "Western only" hides non-Western volumes from the results outright, so
-      // they can't be requested (the create route enforces it too).
-      const allowed = config.requestsWesternOnly ? found.filter(requestable) : found;
+      // Policy filters (Western-only / no-collections) hide disallowed volumes
+      // from the results outright, so they can't be requested (the create route
+      // enforces the same, since a crafted request would bypass the UI).
+      const filtered = config.requestsWesternOnly || config.requestsNoCollections;
+      const allowed = filtered ? found.filter(requestable) : found;
       res.json({
         results: allowed.map((v) => {
           const lib = store.libraryState(v.id);
@@ -148,10 +156,14 @@ export default function register(api) {
     }
     try {
       const vol = await cv().volume(cvId);
-      // Enforce the Western-only policy server-side (the search hides these, but
-      // a crafted request would otherwise slip through).
+      // Enforce the request policies server-side (the search hides these, but a
+      // crafted request would otherwise slip through). The create path has the
+      // volume's full description, so collection detection is strongest here.
       if (!requestable(vol)) {
-        return res.status(403).json({ error: 'only Western comics can be requested on this server' });
+        const why = (config.requestsNoCollections && isCollection(vol))
+          ? 'collected editions (TPBs, omnibuses, …) can’t be requested on this server'
+          : 'only Western comics can be requested on this server';
+        return res.status(403).json({ error: why });
       }
       const { request, seconded } = store.create(uid(req), uname(req), vol, (req.body || {}).note);
       if (seconded) return res.json({ request, seconded: true });

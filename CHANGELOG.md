@@ -8,6 +8,14 @@ by the maintainers when changes merge, so concurrent PRs don't conflict here.
 
 ## [Unreleased]
 
+### Added
+- **No collections** setting: when on, collected editions — trade paperbacks,
+  hardcovers, omnibuses, "Complete" collections, and similar — are hidden from
+  request search and rejected on create, so only single-issue series can be
+  requested. ComicVine has no format field, so it's detected heuristically from
+  the volume's title and description (validated against the full CloneVine
+  catalogue); it catches the large majority but isn't perfect.
+
 ## [1.1.0] — 2026-07-10
 
 ### Added

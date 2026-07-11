@@ -8,6 +8,8 @@ by the maintainers when changes merge, so concurrent PRs don't conflict here.
 
 ## [Unreleased]
 
+## [1.2.0] — 2026-07-11
+
 ### Added
 - **No collections** setting: when on, collected editions — trade paperbacks,
   hardcovers, omnibuses, "Complete" collections, and similar — are hidden from

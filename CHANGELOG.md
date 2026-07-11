@@ -8,6 +8,15 @@ by the maintainers when changes merge, so concurrent PRs don't conflict here.
 
 ## [Unreleased]
 
+## [1.2.1] — 2026-07-11
+
+### Fixed
+- **No collections** now also detects collected editions from the volume's
+  description opener ("Trade paperback collecting …", "Graphic novel", "Collects
+  #1-6"), so original graphic novels and TPBs with a plain title — e.g. *God of
+  War: Fallen God* — are caught, not only ones with a format word in the name. A
+  series that merely mentions being "collected in" an omnibus stays requestable.
+
 ## [1.2.0] — 2026-07-11
 
 ### Added

@@ -40,10 +40,13 @@ export function isCollection(vol) {
     if (!Number.isFinite(count) || count <= AMBIGUOUS_MAX_ISSUES) return true;
   }
 
-  // "Collects Foo #1-6" / "Collected edition of …" — decisive when we have it.
+  // Description signal (search carries `deck`; create carries full `description`).
+  // Anchored to the START: a collection OPENS by naming its format/action
+  // ("Trade paperback collecting …", "Collects #1-6", "Graphic novel. …").
+  // Anchoring is what keeps a real series that merely mentions being "collected
+  // in" an omnibus elsewhere from being caught.
   const blurb = stripHtml(vol?.description || vol?.deck || '');
-  if (/^(collects|collected edition)\b/i.test(blurb)) return true;
-  if (/\bcollects (issues?|#)\b/i.test(blurb.slice(0, 160))) return true;
+  if (/^(collects|collecting|collected edition|trade paperbacks?|tpb|hardcovers?|graphic novels?|omnibus|compendium|deluxe edition)\b/i.test(blurb)) return true;
 
   return false;
 }

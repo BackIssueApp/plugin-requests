@@ -35,6 +35,16 @@ test('the "Collects …" blurb flags a collection whose name has no keyword', ()
   assert.equal(isCollection(v('The Flash: Rogues', 1, 'Collected edition of the acclaimed storyline.')), true);
 });
 
+test('description that OPENS as a collected format flags (OGNs / TPBs with clean names)', () => {
+  // God of War: Fallen God — the TPB is flagged, the source mini-series is not.
+  assert.equal(isCollection(v('God of War: Fallen God', 1, 'Trade paperback collecting God of War: Fallen God.')), true);
+  assert.equal(isCollection(v('God of War: Fallen God', 4, 'Four issue mini-series. Collected in God of War: Fallen God')), false);
+  assert.equal(isCollection(v('Steve Jobs: Insanely Great', 1, 'Graphic novel.')), true);
+  assert.equal(isCollection(v('Powers: Cosmic', 1, 'Trade paperback collecting Powers #13-18.')), true);
+  // A series that merely mentions being collected elsewhere is NOT a collection.
+  assert.equal(isCollection(v('Astro City', 23, 'Volume 2 of Astro City. Issues #1-3 were collected in the omnibus.')), false);
+});
+
 test('real ongoing series are not flagged', () => {
   for (const [n, c] of [['Saga', 72], ['The Walking Dead', 193], ['Batman', 900],
     ['Kemeko Deluxe!', 9], ['Absolute Batman', 3], ['Completely Cracked', 4]])

@@ -8,6 +8,18 @@ by the maintainers when changes merge, so concurrent PRs don't conflict here.
 
 ## [Unreleased]
 
+## [1.2.3] — 2026-07-12
+
+### Fixed
+- **No collections** now also catches collected editions whose description
+  states what it collects a little past the very start — e.g. after a "NOTE:"
+  or "Advertisement" lead-in (*X-Men Legends Vol. 2: The Dark Phoenix Saga* →
+  "Trade Paperback collecting Uncanny X-Men #129-137"; *Batman: The Dark Knight
+  Returns* → "Collects Batman: The Dark Knight #1-4"). It scans the **start** of
+  the description, so an ongoing series that merely lists its own collected
+  editions further down, or narrates being "collected in" an omnibus, stays
+  requestable. Validated against the full ComicVine catalogue.
+
 ## [1.2.2] — 2026-07-11
 
 ### Fixed

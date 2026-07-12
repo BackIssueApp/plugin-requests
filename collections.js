@@ -27,6 +27,17 @@ const STRONG = new RegExp([
 const AMBIGUOUS = /\b(collection|collected|complete|digest|hc)\b/i;
 const AMBIGUOUS_MAX_ISSUES = 15;
 
+// Description shapes that state THIS volume is a collection:
+//   FORMAT_COLLECTS — a format word directly followed by a collect/reprint verb
+//                     ("Trade Paperback collecting …", "Hardcover reprinting …").
+//   COLLECTS_ISSUES — "Collects …/Collecting … #<n>" naming the issues gathered.
+// Scanned only over the HEAD of the description (see isCollection): a real
+// collected edition LEADS with this; an ongoing series that merely lists its
+// "Collected Editions" further down, or narrates "collected in …", stays clear.
+const FORMAT_COLLECTS = /\b(trade\s*paperbacks?|hardcovers?|graphic\s*novels?|omnibus|compendium|digest|deluxe(?:\s+edition)?|paperbacks?|softcovers?|prestige|hc|tpb|gn)\s+(?:collect(?:s|ing|ed)?|reprint(?:s|ing|ed)?)\b/i;
+const COLLECTS_ISSUES = /\bcollect(?:s|ing)\b[^.]{0,45}#\s*\d/i;
+const DESC_HEAD = 120;
+
 const stripHtml = (s) => String(s || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 
 /** Does this ComicVine volume look like a collected edition rather than a
@@ -41,12 +52,18 @@ export function isCollection(vol) {
   }
 
   // Description signal (search carries `deck`; create carries full `description`).
-  // Anchored to the START: a collection OPENS by naming its format/action
-  // ("Trade paperback collecting …", "Collects #1-6", "Graphic novel. …").
-  // Anchoring is what keeps a real series that merely mentions being "collected
-  // in" an omnibus elsewhere from being caught.
+  // A collection OPENS by naming its format/action ("Trade paperback collecting
+  // …", "Collects #1-6", "Graphic novel. …").
   const blurb = stripHtml(vol?.description || vol?.deck || '');
   if (/^(collects|collecting|collected edition|trade paperbacks?|tpb|hardcovers?|graphic novels?|omnibus|compendium|deluxe edition)\b/i.test(blurb)) return true;
+
+  // Same idea, but tolerant of a leading "NOTE:"/"Advertisement"/one-line
+  // summary before the collect statement — so long as it's still near the START
+  // (first ~120 chars). Scanning only the head is what keeps an ongoing series
+  // clear when it merely LISTS its "Collected Editions" further down, or says a
+  // run was "collected in" an omnibus, or narrates "never collecting #57-75".
+  const head = blurb.slice(0, DESC_HEAD);
+  if (FORMAT_COLLECTS.test(head) || COLLECTS_ISSUES.test(head)) return true;
 
   return false;
 }

@@ -1,6 +1,6 @@
 {
   "name": "backissue-requests",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Volume requests: users ask for comics, curators approve — with votes, notes, and auto-approve",
   "type": "module",
   "private": true,

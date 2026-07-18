@@ -8,6 +8,13 @@ by the maintainers when changes merge, so concurrent PRs don't conflict here.
 
 ## [Unreleased]
 
+## [1.2.4] — 2026-07-18
+
+### Changed
+- Settings moved from **Settings → Sources** to the dedicated **Settings →
+  Plugins** tab (falls back to the Sources area on cores without it).
+
+
 ## [1.2.3] — 2026-07-12
 
 ### Fixed

@@ -8,6 +8,8 @@ by the maintainers when changes merge, so concurrent PRs don't conflict here.
 
 ## [Unreleased]
 
+## [1.3.0] — 2026-09-04
+
 ### Changed
 
 - Approving a request (by hand or auto-approve) now **picks** every missing

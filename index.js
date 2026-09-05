@@ -9,7 +9,7 @@ import Database from 'better-sqlite3';
 import config from '../../src/config.js';
 import { makeCvClient } from '../../src/cv.js';
 import { addSeriesFromCv } from '../../src/cvmatch.js';
-import { ensureCvIssueRow, queueIssues } from '../../src/db.js';
+import { ensureCvIssueRow, queueIssues, setIssueWants } from '../../src/db.js';
 import { roleGrants, CORE_PERMISSIONS } from '../../src/users.js';
 import { registeredPermissions } from '../../src/plugins.js';
 import { openRequestsStore } from './store.js';
@@ -104,6 +104,21 @@ export default function register(api) {
     return ids.length;
   }
 
+  // An approved request is a WANT, not just a one-off download: every missing
+  // issue of the volume is picked for the requester (reason request:<id>), so
+  // automation keeps after them whatever the series' monitoring policy, and
+  // the requester is told when each one lands. No-op where the policy already
+  // wants them; tolerated on a core without picks.
+  function wantVolume(cvVolumeId, requestId, userId) {
+    const core = requireCoreDb();
+    const sid = core.prepare('SELECT id FROM series WHERE cv_id = ?').get(cvVolumeId)?.id;
+    if (!sid) return 0;
+    const ids = core.prepare(`SELECT ci.comicvine_id id FROM cv_issues ci WHERE ci.cv_series_id = ?
+      AND NOT EXISTS (SELECT 1 FROM library_files lf WHERE lf.cv_issue_id = ci.comicvine_id AND lf.valid = 1)`).all(cvVolumeId).map((r) => r.id);
+    try { return setIssueWants(core, sid, ids, true, { reason: `request:${requestId}`, userId: userId || null }).changed; }
+    catch { return 0; }
+  }
+
   // GET /api/requests — the queue, newest pending first, with per-user vote
   // state and live library progress. Any requester may see all requests
   // (votes only make sense in the open).
@@ -173,6 +188,7 @@ export default function register(api) {
       if (config.requestsAutoApprove) {
         const r = await addSeriesFromCv(requireCoreDb(), cv(), cvId);
         store.approve(request.id, 'auto-approve');
+        wantVolume(cvId, request.id, uid(req));
         // With auto-download-on-add configured, missing issues download for
         // every auto-approved request regardless of the requester's own
         // permission (it's a server-wide automation). Otherwise they still
@@ -205,6 +221,7 @@ export default function register(api) {
     try {
       await addSeriesFromCv(requireCoreDb(), cv(), r.cv_volume_id);
       store.approve(r.id, uname(req));
+      wantVolume(r.cv_volume_id, r.id, r.requested_by);
       const queued = (req.body || {}).download ? queueVolumeDownloads(req, r.cv_volume_id) : 0;
       const after = store.get(r.id, uid(req));
       // Tell the requester (targeted — only they + managers see it).

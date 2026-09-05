@@ -8,6 +8,14 @@ by the maintainers when changes merge, so concurrent PRs don't conflict here.
 
 ## [Unreleased]
 
+### Changed
+
+- Approving a request (by hand or auto-approve) now **picks** every missing
+  issue of the volume for the requester, so the core's automation keeps after
+  them regardless of the series' monitoring policy and the requester is told
+  when each one arrives. Needs a core with per-issue picks; older cores are
+  unaffected.
+
 ## [1.2.4] — 2026-07-18
 
 ### Changed

@@ -96,9 +96,15 @@ test('routes: viewer files + votes but cannot decide; trusted approves', async (
 
   const { p: dir, rm } = tmpdir();
   const oldDbPath = config.dbPath;
-  const oldCvBase = config.cvBaseUrl, oldKeys = config.comicvineKeys;
+  const oldCvBase = config.cvBaseUrl, oldKeys = config.comicvineKeys, oldInstanceKey = config.metadataInstanceKey, oldBaseOverride = process.env.METADATA_BASE_OVERRIDE;
   config.dbPath = path.join(dir, 'cat.db');
-  config.cvBaseUrl = `http://localhost:${fakeCv.address().port}`;
+  // Point the core at the fake. The hosted metadata service is the default
+  // source and a stored cvBaseUrl is deliberately ignored, so the env override
+  // (the test/dev hook) names the endpoint, and a preset instance key keeps
+  // the client from registering — against the fake, or worse, for real.
+  process.env.METADATA_BASE_OVERRIDE = `http://localhost:${fakeCv.address().port}`;
+  config.metadataInstanceKey = 'test-instance-key';
+  config.cvBaseUrl = '';
   config.comicvineKeys = 'test-key';
   const db = openDb(config.dbPath);
   registerRequests(pluginApi);
@@ -176,6 +182,8 @@ test('routes: viewer files + votes but cannot decide; trusted approves', async (
     s.close();
     fakeCv.close();
     config.dbPath = oldDbPath;
+    config.metadataInstanceKey = oldInstanceKey;
+    if (oldBaseOverride === undefined) delete process.env.METADATA_BASE_OVERRIDE; else process.env.METADATA_BASE_OVERRIDE = oldBaseOverride;
     config.cvBaseUrl = oldCvBase;
     config.comicvineKeys = oldKeys;
     try { rm(); } catch { /* Windows file locks — temp dir reaped by OS */ }

@@ -58,7 +58,7 @@
     async function refreshBadge() {
       if (!badgeEl || !canManage) return;
       try {
-        const r = await api.get('/api/requests');
+        const r = await api.get('/api/requests/count');
         const n = r.pending || 0;
         badgeEl.textContent = n;
         badgeEl.hidden = n === 0;

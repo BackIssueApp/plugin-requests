@@ -8,6 +8,14 @@ by the maintainers when changes merge, so concurrent PRs don't conflict here.
 
 ## [Unreleased]
 
+## [1.3.1] — 2026-09-07
+
+### Fixed
+
+- **The sidebar badge no longer downloads the whole queue.** It asked for
+  every request, with covers and notes, on every page load just to show the
+  pending count. A count route answers that in a few bytes.
+
 ## [1.3.0] — 2026-09-04
 
 ### Changed

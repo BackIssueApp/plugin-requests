@@ -131,6 +131,13 @@ export default function register(api) {
     });
   }, { access: CAN_CREATE });
 
+  // GET /api/requests/count — just the pending tally, for the sidebar badge.
+  // The badge used to pull the whole queue (half a megabyte on a busy
+  // install) on every page load to read one number.
+  api.registerRoute('get', '/api/requests/count', (req, res) => {
+    res.json({ pending: store.pendingCount(), canManage: manages(req) });
+  }, { access: CAN_CREATE });
+
   // GET /api/requests/search?q= — ComicVine volume search annotated with
   // library/request state so the UI can offer the right action per result.
   api.registerRoute('get', '/api/requests/search', async (req, res) => {

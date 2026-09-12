@@ -220,6 +220,7 @@
           '<div class="rq-row__who">by <b>' + esc(r.requested_by_name || '?') + '</b> · ' + esc((r.created_at || '').slice(0, 10)) +
             (r.note ? ' — <i>' + esc(r.note) + '</i>' : '') + '</div>' +
           (r.status === 'declined' && r.decline_reason ? '<div class="rq-row__reason">Declined: ' + esc(r.decline_reason) + '</div>' : '') +
+          downloadLine(r) +
         '</div>' +
         '<span class="rq-row__status rq-row__status--' + r.display + '">' + (STATUS_LABEL[r.display] || r.display) + progress + '</span>' +
         '<button class="rq-row__vote' + (r.voted ? ' is-on' : '') + '" title="' + (r.voted ? 'Remove your vote' : 'Second this request') + '">▲ ' + r.votes + '</button>' +
@@ -236,7 +237,7 @@
             actionBtn('✓⤓', 'Approve + download every issue', () => decide(r, true), !canDownload),
           );
         } else {
-          actions.append(actionBtn('✓ Approve', 'Approve — adds it to the library from your sources', () => decide(r, false)));
+          actions.append(actionBtn('✓ Approve', 'Approve — searches your download sources for it', () => decide(r, false)));
         }
         actions.append(actionBtn('✗', 'Decline with a reason', () => declineFlow(el, r)));
       }
@@ -248,6 +249,16 @@
         }));
       }
       return el;
+    }
+
+    // What the download sources are doing about a book request (approved
+    // rows only; nothing to say once it is on the shelf).
+    function downloadLine(r) {
+      const d = r.download;
+      if (!d || r.status !== 'approved' || r.display === 'available') return '';
+      if (d.status === 'active') return '<div class="rq-row__dl">Downloading from ' + esc(d.source) + (d.release ? ' · ' + esc(d.release) : '') + '</div>';
+      if (d.status === 'failed') return '<div class="rq-row__reason">Download failed' + (d.source ? ' (' + esc(d.source) + ')' : '') + ': ' + esc(d.error || 'unknown error') + ' — tried again on the schedule</div>';
+      return '';
     }
 
     function actionBtn(label, title, fn, hidden) {
@@ -264,9 +275,10 @@
       const res = await api.post('/api/requests/' + r.id + '/approve', { download }).catch((e) => ({ error: String(e) }));
       if (res.error) return alertNote(res.error);
       await loadQueue();
-      // A book no source has yet stays approved-and-waiting; say so.
-      if ((r.kind === 'ebook' || r.kind === 'audiobook') && res.fulfilled === false) {
-        listEl.insertAdjacentHTML('afterbegin', '<div class="rq__note">Approved. No source has “' + esc(r.title || '') + '” yet — it will be added when one does, and the requester will be told.</div>');
+      // A book: say what the download sources did with it.
+      if (res.note) {
+        const bad = ['no-match', 'no-sources', 'no-library', 'unsupported', 'error'].includes(res.download?.status);
+        listEl.insertAdjacentHTML('afterbegin', '<div class="rq__note' + (bad ? ' rq__note--warn' : '') + '">Approved. ' + esc(res.note) + '</div>');
       }
     }
 
@@ -368,7 +380,7 @@
         const action = el.querySelector('.rq-card__action');
         if (res.error) { action.innerHTML = '<span class="rq-card__state rq-card__state--bad">' + esc(res.error) + '</span>'; return; }
         action.innerHTML = '<span class="rq-card__state">' +
-          (res.autoApproved ? (res.fulfilled === false ? '✓ Approved — added when a source has it' : '✓ Approved &amp; added') : res.seconded ? '📥 Seconded the existing request' : '📥 Requested') + '</span>';
+          (res.autoApproved ? (res.note ? '✓ Approved — ' + esc(res.note) : '✓ Approved &amp; added') : res.seconded ? '📥 Seconded the existing request' : '📥 Requested') + '</span>';
         refreshBadge();
       };
       el.querySelector('.rq-card__body').appendChild(form);

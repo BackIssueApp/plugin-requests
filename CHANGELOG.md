@@ -19,13 +19,17 @@ by the maintainers when changes merge, so concurrent PRs don't conflict here.
   and file a request with a note. Duplicates second the existing request,
   votes work the same, and the queue shows a kind badge. The mobile apps'
   comic requests are unchanged.
-- **Approving a book shelves it.** Approval asks every remote source that
-  can search (Book Warehouse, when configured); a hit is catalogued as an
-  on-demand entry and the book reads or plays right away. When no source
-  has it, the request stays approved-and-waiting: the new **Fill approved
-  book requests** job asks again on its schedule, and a scan or import that
-  matches by title and author counts too. The requester is told when it
-  lands.
+- **Approving a book downloads it.** Approval asks your download sources
+  for it — usenet and torrent, and any site source that carries books or
+  audiobooks — grabs the best release, and the Ebooks or Audiobooks plugin
+  files it into the library when it lands (needs app 0.8.4 or later). The
+  queue row says which source is downloading it, or why it failed. When no
+  source has it, the request stays approved-and-waiting: the new **Fill
+  approved book requests** job asks again on its schedule, and a scan or
+  import that matches by title and author counts too. The requester is told
+  when it lands. On-demand catalogs are not consulted — what they carry is
+  on the shelf already. A book's ISBN is kept with the request and handed
+  to the sources, so a catalog site is asked for the exact edition.
 
 ## [1.3.1] — 2026-09-07
 

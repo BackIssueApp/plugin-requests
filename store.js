@@ -48,6 +48,9 @@ export function openRequestsStore(dbPath) {
   if (!cols.includes('external_id')) db.exec('ALTER TABLE requests ADD COLUMN external_id TEXT');
   if (!cols.includes('author')) db.exec('ALTER TABLE requests ADD COLUMN author TEXT');
   if (!cols.includes('fulfilled_issue_id')) db.exec('ALTER TABLE requests ADD COLUMN fulfilled_issue_id INTEGER');
+  // A book's ISBN, when its catalog knows one: the surest key a download
+  // source can search by.
+  if (!cols.includes('isbn')) db.exec('ALTER TABLE requests ADD COLUMN isbn TEXT');
   // The original open-index was on cv_volume_id alone; a book row carries 0
   // there, so the partial index above excludes it and this one takes over.
   const idx = db.prepare("SELECT sql FROM sqlite_master WHERE name='idx_requests_open'").get()?.sql || '';
@@ -172,11 +175,11 @@ export function openRequestsStore(dbPath) {
         return { request: this.get(open.id, userId), seconded: true };
       }
       const r = db.prepare(`
-        INSERT INTO requests (kind, cv_volume_id, external_id, title, author, start_year, publisher, cover_url, issue_count, note, requested_by, requested_by_name)
-        VALUES (?, 0, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?)`)
+        INSERT INTO requests (kind, cv_volume_id, external_id, title, author, start_year, publisher, cover_url, issue_count, note, requested_by, requested_by_name, isbn)
+        VALUES (?, 0, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)`)
         .run(kind, String(item.id), item.title ?? null, item.author ?? null,
           item.year != null ? String(item.year) : null, item.publisher ?? null, item.cover ?? null,
-          String(note || '').slice(0, 500) || null, userId, userName || null);
+          String(note || '').slice(0, 500) || null, userId, userName || null, item.isbn ? String(item.isbn) : null);
       this.vote(userId, r.lastInsertRowid, true);
       return { request: this.get(r.lastInsertRowid, userId), seconded: false };
     },

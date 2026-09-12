@@ -49,6 +49,8 @@
 .rq-row__title { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .rq-row__meta, .rq-row__who { font-size: 11.5px; color: #8b8b96; }
 .rq-row__reason { font-size: 11.5px; color: #e5484d; }
+.rq-row__dl { font-size: 11.5px; color: #46c46e; }
+.rq__note--warn { color: #ffc24b; }
 .rq-row__status { flex: none; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; padding: 3px 8px; border-radius: 5px; border: 1px solid #2a2a33; display: flex; gap: 6px; align-items: center; }
 .rq-row__status--pending { color: #ffc24b; border-color: rgba(255, 194, 75, .4); }
 .rq-row__status--approved { color: #7aa2ff; border-color: rgba(122, 162, 255, .4); }

@@ -17,7 +17,7 @@ import { makeCvClient } from '../../src/cv.js';
 import { addSeriesFromCv } from '../../src/cvmatch.js';
 import { ensureCvIssueRow, queueIssues, setIssueWants } from '../../src/db.js';
 import { roleGrants, CORE_PERMISSIONS } from '../../src/users.js';
-import { registeredPermissions, registeredRemoteMediaSources, pluginLibraryTypes } from '../../src/plugins.js';
+import { registeredPermissions, pluginLibraryTypes } from '../../src/plugins.js';
 import { openRequestsStore } from './store.js';
 import { isWestern } from './western.js';
 import { isCollection } from './collections.js';
@@ -109,22 +109,13 @@ export default function register(api) {
       const { makeAudiobookClient } = await import('../audiobooks/metadata.js'); return makeAudiobookClient(config);
     } catch { return null; }
   }
-  const stores = {};
-  async function bookStore(kind) {
-    if (stores[kind]) return stores[kind];
-    try {
-      const mod = kind === 'ebook' ? await import('../ebooks/store.js') : await import('../audiobooks/store.js');
-      const open = mod.openEbooksStore || mod.openAudiobooksStore;
-      stores[kind] = open ? open(config.dbPath) : null;
-    } catch { stores[kind] = null; }
-    return stores[kind];
-  }
   const year4 = (v) => { const m = String(v || '').match(/\d{4}/); return m ? m[0] : null; };
   // One shape for both kinds, whatever the service calls the fields.
   const normBook = (r) => ({
     kind: 'ebook', id: String(r.id), title: r.title || 'Untitled',
     author: (Array.isArray(r.authors) ? r.authors : []).join(', ') || null,
     publisher: r.publisher || null, year: year4(r.published_date), cover: r.thumbnail || null,
+    isbn: r.isbn_13 || r.isbn_10 || null,
     extra: Number.isFinite(r.page_count) && r.page_count > 0 ? `${r.page_count} pages` : null,
   });
   const normAudio = (r) => ({
@@ -151,65 +142,101 @@ export default function register(api) {
     } catch { return null; }
   }
 
-  // Is this source's hit the book that was asked for? Titles must share most
-  // of the shorter title's words, and the authors must not contradict.
-  const norm = (v) => String(v || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
-  function similar(want, meta) {
-    const a = new Set(norm(want.title).split(' ').filter(Boolean));
-    const b = new Set(norm(meta?.title).split(' ').filter(Boolean));
-    if (!a.size || !b.size) return false;
-    const [small, big] = a.size <= b.size ? [a, b] : [b, a];
-    let n = 0; for (const w of small) if (big.has(w)) n++;
-    if (n / small.size < 0.6) return false;
-    const theirs = norm(meta?.author || (Array.isArray(meta?.authors) ? meta.authors.join(' ') : ''));
-    if (!theirs || !want.authors.length) return true;
-    return want.authors.some((x) => {
-      const nx = norm(x); const last = nx.split(' ').pop();
-      return !!nx && (theirs.includes(nx) || nx.includes(theirs) || (last && theirs.includes(last)));
-    });
+  // ---- getting a book from the download sources ---------------------------
+  // An approved book or audiobook goes to the app's media download: every
+  // enabled download source that serves its kind — usenet and torrent
+  // always, a site source only when it declares ebooks or audiobooks — is
+  // searched in priority order, the first match is grabbed, and the plugin
+  // that owns the library type files the result. The request is marked
+  // fulfilled when the file lands (onMediaDownload below), or by the job when
+  // a scan or import brings the book in some other way. Remote catalogs
+  // (on-demand shelves) are not consulted: what they carry is on the shelf
+  // already, so a request for it would never be filed.
+  const REF = (id) => `requests:${id}`;
+  const refId = (ref) => { const m = /^requests:(\d+)$/.exec(String(ref || '')); return m ? Number(m[1]) : null; };
+  const canDownload = typeof api.downloadMedia === 'function';
+  /** The latest download attempt for a request, for the queue row:
+   *  { status: 'active' | 'imported' | 'failed', source, release, error }. */
+  function downloadState(r) {
+    if (!canDownload || kindOf(r.kind) === 'comic') return null;
+    try {
+      const g = requireCoreDb().prepare('SELECT source, title, status, error, grabbed_at FROM grabs WHERE ref = ? ORDER BY id DESC LIMIT 1').get(REF(r.id));
+      return g ? { status: g.status, source: g.source, release: g.title, error: g.error, at: g.grabbed_at } : null;
+    } catch { return null; }
   }
-
-  /** Try to put an approved book/audiobook request on the shelf from a remote
-   *  source. Returns { source, issueId, seriesId } or null when no source has it. */
+  /** Ask the sources for an approved book. → { status, source?, release?, error? }
+   *  where status is grabbed | downloading | imported | active (already on
+   *  its way) | no-match | no-sources | no-library | unsupported | error. */
   async function fulfil(r) {
     const kind = kindOf(r.kind);
-    if (kind === 'comic') return null;
+    if (kind === 'comic') return { status: 'n/a' };
     const libraryId = libraryFor(kind);
-    if (!libraryId) return null;
-    let sources = [];
-    try { sources = (registeredRemoteMediaSources?.(kind) || []).filter((src) => typeof src.search === 'function'); } catch { /* older core */ }
-    const want = { title: r.title, authors: r.author ? String(r.author).split(',').map((a) => a.trim()).filter(Boolean) : [] };
-    for (const src of sources) {
-      let hits = [];
-      try { hits = await src.search(null, r.title); } catch { continue; }
-      const hit = (hits || []).find((h) => h?.remote_id != null && similar(want, h.meta));
-      if (!hit) continue;
-      const st = await bookStore(kind);
-      if (!st?.catalogRemote) return null;
-      const out = st.catalogRemote({ libraryId, source: src.id, remoteId: String(hit.remote_id), meta: hit.meta || {} });
-      if (!out?.issueId) continue;
-      store.fulfil(r.id, out.issueId);
-      return { source: src.label || src.id, issueId: out.issueId, seriesId: out.seriesId };
-    }
-    return null;
+    if (!libraryId) return { status: 'no-library' };
+    if (!canDownload) return { status: 'unsupported' };
+    const current = downloadState(r);
+    if (current?.status === 'active') return { status: 'active', source: current.source, release: current.release };
+    try {
+      return await api.downloadMedia({
+        db: requireCoreDb(), type: kind, libraryId, ref: REF(r.id),
+        title: r.title, author: r.author || null, year: r.start_year || null, isbn: r.isbn || null,
+      });
+    } catch (e) { return { status: 'error', error: String(e?.message || e) }; }
   }
+  const KIND_WORD = { ebook: 'book', audiobook: 'audiobook' };
+  /** One line for the person who approved: what happened to the download. */
+  function downloadNote(f, r) {
+    const t = r.title || `the ${KIND_WORD[kindOf(r.kind)] || 'book'}`;
+    switch (f?.status) {
+      case 'grabbed': case 'downloading': return `${t} is downloading from ${f.source}${f.release ? ` (${f.release})` : ''}.`;
+      case 'active': return `${t} is already downloading from ${f.source}.`;
+      case 'imported': return `${t} is in the library now.`;
+      case 'no-match': return `No source had ${t} — it will be tried again on the Fill approved book requests schedule.`;
+      case 'no-sources': return `No download source is enabled that carries ${KIND_WORD[kindOf(r.kind)] || 'book'}s — turn one on under Settings → Downloading.`;
+      case 'no-library': return `There is no ${KIND_WORD[kindOf(r.kind)] || 'book'} library to file it into.`;
+      case 'unsupported': return 'This version of the app cannot download books — update it to 0.8.4 or later.';
+      case 'error': return `The download could not start: ${f.error}`;
+      default: return '';
+    }
+  }
+  // The download landed (or did not): the request is fulfilled and the
+  // requester told; a failure is left for the job to retry.
+  api.onMediaDownload?.((e) => {
+    const id = refId(e?.ref);
+    if (!id) return;
+    const r = store.get(id);
+    if (!r || r.status !== 'approved') return;
+    if (e.event === 'imported' && e.issueId) {
+      store.fulfil(id, e.issueId);
+      if (notifyLater) {
+        try { notifyLater({ type: 'request.available', category: 'request', level: 'success', title: 'Your request is in', body: `${r.title || 'Your book'} is now in the library.`, userId: r.requested_by }); } catch { /* best-effort */ }
+      }
+    }
+  });
 
   // Approved book requests nothing has filled yet: a scan or import may have
-  // brought the book in since (title/author match), or a source may have it
-  // now. Either way the requester hears about it.
+  // brought the book in since (title/author match) — then the requester
+  // hears about it — or the sources are asked again (a new release may have
+  // been posted; a failed grab's release is blacklisted, so the next-best is
+  // tried). A download already in flight is left alone.
   api.registerJob?.({
     id: 'requests-fulfil',
     label: 'Fill approved book requests',
     scheduleKey: 'requestsFulfilHours',
     run: async () => {
+      let asked = 0; let landed = 0;
       for (const r of store.unfulfilled()) {
-        let landed = null;
-        if (r.issue_id) { store.fulfil(r.id, r.issue_id); landed = { issueId: r.issue_id }; }
-        else landed = await fulfil(r).catch(() => null);
-        if (landed && notifyLater) {
-          try { notifyLater({ type: 'request.available', category: 'request', level: 'success', title: 'Your request is in', body: `${r.title || 'A book'} is now in the library.`, userId: r.requested_by }); } catch { /* best-effort */ }
+        if (r.issue_id) {
+          store.fulfil(r.id, r.issue_id); landed++;
+          if (notifyLater) {
+            try { notifyLater({ type: 'request.available', category: 'request', level: 'success', title: 'Your request is in', body: `${r.title || 'A book'} is now in the library.`, userId: r.requested_by }); } catch { /* best-effort */ }
+          }
+          continue;
         }
+        const f = await fulfil(r).catch(() => null);
+        if (f && ['grabbed', 'downloading', 'imported'].includes(f.status)) asked++;
+        if (f?.status === 'no-sources' || f?.status === 'unsupported') break; // the same answer for every request
       }
+      return { asked, landed };
     },
   });
 
@@ -260,7 +287,7 @@ export default function register(api) {
   api.registerRoute('get', '/api/requests', (req, res) => {
     remember(req);
     res.json({
-      requests: store.list(uid(req)),
+      requests: store.list(uid(req)).map((r) => (r.kind && r.kind !== 'comic' ? { ...r, download: downloadState(r) } : r)),
       pending: store.pendingCount(),
       autoApprove: !!config.requestsAutoApprove,
       canManage: manages(req),
@@ -334,7 +361,7 @@ export default function register(api) {
       if (!mediaEnabled()[kind]) return res.status(400).json({ error: `${kind === 'ebook' ? 'books' : 'audiobooks'} can’t be requested on this server` });
       const id = String(body.externalId || '').trim();
       if (!id) return res.status(400).json({ error: 'externalId required' });
-      const item = (await lookupItem(kind, id)) || (body.title ? { kind, id, title: String(body.title), author: body.author || null, publisher: null, year: body.year || null, cover: body.cover || null } : null);
+      const item = (await lookupItem(kind, id)) || (body.title ? { kind, id, title: String(body.title), author: body.author || null, publisher: null, year: body.year || null, cover: body.cover || null, isbn: body.isbn || null } : null);
       if (!item) return res.status(404).json({ error: 'no such item' });
       const lib = store.bookState(kind, id, item.title, item.author, null);
       if (lib.issue_id != null) return res.status(409).json({ error: 'already in the library', seriesId: lib.series_id });
@@ -343,9 +370,10 @@ export default function register(api) {
         if (seconded) return res.json({ request, seconded: true });
         if (config.requestsAutoApprove) {
           store.approve(request.id, 'auto-approve');
-          const f = await fulfil(store.get(request.id, uid(req)));
-          notify(req, { type: 'request.approved', category: 'request', level: 'success', title: 'Request added', body: f ? `${item.title} was added to the library.` : `${item.title} was approved — it will be added when a source has it.` });
-          return res.json({ request: store.get(request.id, uid(req)), autoApproved: true, fulfilled: !!f, seriesId: f?.seriesId ?? null });
+          const approved = store.get(request.id, uid(req));
+          const f = await fulfil(approved);
+          notify(req, { type: 'request.approved', category: 'request', level: 'success', title: 'Request approved', body: `${item.title} was approved. ${downloadNote(f, approved)}`.trim() });
+          return res.json({ request: store.get(request.id, uid(req)), autoApproved: true, download: f, note: downloadNote(f, approved) });
         }
         notify(req, { type: 'request.filed', category: 'request', level: 'info', title: 'New request', body: `${uname(req)} requested ${item.title}${item.author ? ' by ' + item.author : ''}.` });
         return res.json({ request });
@@ -405,14 +433,15 @@ export default function register(api) {
     if (!r) return res.status(404).json({ error: 'no such request' });
     if (r.status !== 'pending') return res.status(400).json({ error: 'request already decided' });
     if (kindOf(r.kind) !== 'comic') {
-      // A book: approve, then shelve it from a source if one has it. Nothing
-      // to download — a remote entry reads/plays on demand.
+      // A book: approve, then ask the download sources for it. The requester
+      // is told now that it was approved, and again when the file lands.
       try {
         store.approve(r.id, uname(req));
-        const f = await fulfil(r);
+        const f = await fulfil(store.get(r.id, uid(req)));
         const after = store.get(r.id, uid(req));
-        notify(req, { type: 'request.approved', category: 'request', level: 'success', title: 'Request approved', body: f ? `Your request for ${r.title || 'a book'} was approved and it is in the library now.` : `Your request for ${r.title || 'a book'} was approved — it will be added when a source has it.`, userId: r.requested_by });
-        return res.json({ request: after, seriesId: after.series_id, fulfilled: !!f, source: f?.source ?? null });
+        const started = ['grabbed', 'downloading', 'active'].includes(f?.status);
+        notify(req, { type: 'request.approved', category: 'request', level: 'success', title: 'Request approved', body: `Your request for ${r.title || 'a book'} was approved${f?.status === 'imported' ? ' and it is in the library now' : started ? ' and it is downloading' : ' — it will be added when a source has it'}.`, userId: r.requested_by });
+        return res.json({ request: after, seriesId: after.series_id, download: f, note: downloadNote(f, r) });
       } catch (e) { return res.status(502).json({ error: String(e?.message || e) }); }
     }
     try {

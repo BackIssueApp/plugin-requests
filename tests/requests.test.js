@@ -208,3 +208,52 @@ test('western allowlist: Western publishers pass; foreign and unknown are blocke
   assert.ok(!isWestern(''));
   assert.ok(!isWestern(null));
 });
+
+// Books and audiobooks: their own dedupe key, and library state read from
+// the owning plugin's tables — a matched id, else the same title.
+test('store: book requests dedupe by catalog id and read availability from the ebooks tables', () => {
+  const { p: dir, rm } = tmpdir();
+  let store;
+  try {
+    store = openRequestsStore(path.join(dir, 'cat.db'));
+    const book = { id: 'gb-123', title: 'The Left Hand of Darkness', author: 'Ursula K. Le Guin', publisher: 'Ace', year: '1969', cover: 'https://c/lh.jpg' };
+    const { request, seconded } = store.createItem(3, 'reader', 'ebook', book, 'please');
+    assert.equal(seconded, false);
+    assert.equal(request.kind, 'ebook');
+    assert.equal(request.external_id, 'gb-123');
+    assert.equal(request.author, 'Ursula K. Le Guin');
+    assert.equal(request.display, 'pending');
+    // the same book again seconds it; the same id as an AUDIOBOOK is a different request
+    assert.equal(store.createItem(4, 'other', 'ebook', book, null).seconded, true);
+    assert.equal(store.createItem(4, 'other', 'audiobook', { ...book, id: 'gb-123' }, null).seconded, false);
+    assert.equal(store.list(3).length, 2);
+    assert.throws(() => store.createItem(3, 'reader', 'comic', book, null));
+
+    store.approve(request.id, 'admin');
+    assert.equal(store.get(request.id, 3).display, 'approved', 'no ebooks tables yet: not available');
+    assert.equal(store.unfulfilled().length, 1, 'the approved book is waiting; the pending audiobook is not');
+
+    // The ebooks plugin shelves it (a remote entry: no file, still readable).
+    const db = new Database(path.join(dir, 'cat.db'));
+    db.exec(`
+      CREATE TABLE series (id INTEGER PRIMARY KEY, publisher TEXT);
+      CREATE TABLE issues (id INTEGER PRIMARY KEY, series_id INTEGER, title TEXT);
+      CREATE TABLE ebooks_files (issue_id INTEGER, match_id TEXT);
+      INSERT INTO series VALUES (7, 'Ursula K. Le Guin');
+      INSERT INTO issues VALUES (70, 7, 'The Left Hand of Darkness');
+      INSERT INTO ebooks_files VALUES (70, NULL);
+    `);
+    db.close();
+    let r = store.get(request.id, 3);
+    assert.equal(r.display, 'available', 'title + author match counts');
+    assert.equal(r.series_id, 7);
+    assert.equal(r.issue_id, 70);
+    // explicit fulfilment pins it even if the title later changes
+    store.fulfil(request.id, 70);
+    assert.equal(store.unfulfilled().length, 0, 'nothing approved is waiting any more');
+    // a comic request is unaffected by any of this
+    const c = store.create(3, 'reader', VOL, null).request;
+    assert.equal(c.kind, 'comic');
+    assert.equal(c.display, 'pending');
+  } finally { try { store?.close(); } catch { /* already closed */ } rm(); }   // Windows: close before the dir goes
+});

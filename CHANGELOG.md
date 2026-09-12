@@ -8,6 +8,25 @@ by the maintainers when changes merge, so concurrent PRs don't conflict here.
 
 ## [Unreleased]
 
+## [1.4.0] — 2026-09-12
+
+### Added
+
+- **Books and audiobooks can be requested.** Where the Ebooks or Audiobooks
+  plugin is installed and a library of that type exists, *Find & request*
+  gains a Books / Audiobooks switch: search by title or author (the metadata
+  service), see at once what is already on the shelf or already asked for,
+  and file a request with a note. Duplicates second the existing request,
+  votes work the same, and the queue shows a kind badge. The mobile apps'
+  comic requests are unchanged.
+- **Approving a book shelves it.** Approval asks every remote source that
+  can search (Book Warehouse, when configured); a hit is catalogued as an
+  on-demand entry and the book reads or plays right away. When no source
+  has it, the request stays approved-and-waiting: the new **Fill approved
+  book requests** job asks again on its schedule, and a scan or import that
+  matches by title and author counts too. The requester is told when it
+  lands.
+
 ## [1.3.1] — 2026-09-07
 
 ### Fixed

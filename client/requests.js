@@ -1,7 +1,8 @@
 // Requests client — injected via window.BackIssue. Adds a "Requests" entry
 // to the sidebar's plugin area (with a pending-count badge for reviewers)
 // opening a full-screen overlay: the request queue (vote / approve / decline
-// / withdraw) and a ComicVine search tab for filing new requests. Every
+// / withdraw) and a search tab for filing new requests — ComicVine for
+// comics, and books / audiobooks where the server offers them. Every
 // affordance is gated on the session's actual permissions from /api/auth/me
 // — the server enforces them regardless.
 (function () {
@@ -12,6 +13,11 @@
     let statusFilter = 'all';          // all | pending | approved | declined | mine
     let canCreate = false, canManage = false, canDownload = false, me = { id: 0 };
     let lastRequests = [];
+    // What may be asked for here; comics always, the rest per the server.
+    let media = { comic: true, ebook: false, audiobook: false };
+    let kind = 'comic';
+    const KIND_LABEL = { comic: 'Comics', ebook: 'Books', audiobook: 'Audiobooks' };
+    const KIND_HINT = { comic: 'Search ComicVine volumes… (e.g. Transmetropolitan)', ebook: 'Search books by title or author…', audiobook: 'Search audiobooks by title or author…' };
 
     // ---- permissions ----
     // The bridge exposes the already-resolved session (api.me) — zero extra
@@ -112,6 +118,7 @@
               '<div class="rq__list"></div>' +
             '</div>' +
             '<div class="rq__find" hidden>' +
+              '<div class="rq__kinds" hidden></div>' +
               '<form class="rq__searchform"><input type="search" class="rq__search" placeholder="Search ComicVine volumes… (e.g. Transmetropolitan)"><button class="btn btn--primary rq__go">Search</button></form>' +
               '<div class="rq__grid"></div>' +
             '</div>' +
@@ -136,6 +143,26 @@
         filters.appendChild(b);
       }
       overlay.querySelector('.rq__searchform').onsubmit = (e) => { e.preventDefault(); doSearch(); };
+      paintKinds();
+    }
+
+    // The kind row only appears when there is more than one kind to pick.
+    function paintKinds() {
+      const row = overlay?.querySelector('.rq__kinds');
+      if (!row) return;
+      const kinds = ['comic', 'ebook', 'audiobook'].filter((k) => media[k]);
+      row.hidden = kinds.length < 2;
+      row.innerHTML = '';
+      for (const k of kinds) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'rq__kind' + (k === kind ? ' is-active' : '');
+        b.textContent = KIND_LABEL[k];
+        b.onclick = () => { kind = k; paintKinds(); gridEl.innerHTML = ''; overlay.querySelector('.rq__search').placeholder = KIND_HINT[k]; overlay.querySelector('.rq__search').focus(); };
+        row.appendChild(b);
+      }
+      if (!media[kind]) kind = 'comic';
+      overlay.querySelector('.rq__search').placeholder = KIND_HINT[kind];
     }
 
     function selectTab(key) {
@@ -155,6 +182,7 @@
       catch (e) { listEl.innerHTML = '<div class="rq__note rq__note--bad">Couldn’t load: ' + esc(String(e)) + '</div>'; return; }
       lastRequests = r.requests || [];
       canManage = !!r.canManage;
+      if (r.media) { media = { comic: true, ...r.media }; paintKinds(); }
       paintQueue();
       refreshBadge();
     }
@@ -176,14 +204,18 @@
     const STATUS_LABEL = { pending: 'pending', approved: 'approved', declined: 'declined', available: 'available' };
     function requestRow(r) {
       const el = document.createElement('div');
+      const k = r.kind || 'comic';
       el.className = 'rq-row rq-row--' + r.display;
-      const meta = [r.publisher, r.start_year, r.issue_count ? r.issue_count + ' issues' : null].filter(Boolean).map(esc).join(' · ');
-      const progress = r.status === 'approved' && r.total > 0 && r.display !== 'available'
+      const meta = (k === 'comic'
+        ? [r.publisher, r.start_year, r.issue_count ? r.issue_count + ' issues' : null]
+        : [r.author, r.start_year, r.publisher]).filter(Boolean).map(esc).join(' · ');
+      const progress = r.status === 'approved' && r.total > 0 && r.display !== 'available' && k === 'comic'
         ? '<span class="rq-row__progress">' + r.owned + '/' + r.total + ' on disk</span>' : '';
+      const badge = k === 'comic' ? '' : '<span class="rq-kind rq-kind--' + k + '">' + (k === 'ebook' ? 'Book' : 'Audiobook') + '</span>';
       el.innerHTML =
         '<div class="rq-row__coverwrap">' + (r.cover_url ? '<img loading="lazy" src="' + esc(r.cover_url) + '" alt="">' : '') + '</div>' +
         '<div class="rq-row__main">' +
-          '<div class="rq-row__title">' + esc(r.title || 'Volume ' + r.cv_volume_id) + '</div>' +
+          '<div class="rq-row__title">' + badge + esc(r.title || (k === 'comic' ? 'Volume ' + r.cv_volume_id : 'Untitled')) + '</div>' +
           '<div class="rq-row__meta">' + meta + '</div>' +
           '<div class="rq-row__who">by <b>' + esc(r.requested_by_name || '?') + '</b> · ' + esc((r.created_at || '').slice(0, 10)) +
             (r.note ? ' — <i>' + esc(r.note) + '</i>' : '') + '</div>' +
@@ -198,11 +230,15 @@
       };
       const actions = el.querySelector('.rq-row__actions');
       if (r.status === 'pending' && canManage) {
-        actions.append(
-          actionBtn('✓ Approve', 'Approve — adds the volume to the library', () => decide(r, false)),
-          actionBtn('✓⤓', 'Approve + download every issue', () => decide(r, true), !canDownload),
-          actionBtn('✗', 'Decline with a reason', () => declineFlow(el, r)),
-        );
+        if (k === 'comic') {
+          actions.append(
+            actionBtn('✓ Approve', 'Approve — adds the volume to the library', () => decide(r, false)),
+            actionBtn('✓⤓', 'Approve + download every issue', () => decide(r, true), !canDownload),
+          );
+        } else {
+          actions.append(actionBtn('✓ Approve', 'Approve — adds it to the library from your sources', () => decide(r, false)));
+        }
+        actions.append(actionBtn('✗', 'Decline with a reason', () => declineFlow(el, r)));
       }
       if ((r.status === 'pending' && r.requested_by === me.id) || canManage) {
         actions.append(actionBtn('🗑', canManage ? 'Delete this request' : 'Withdraw your request', async () => {
@@ -227,7 +263,11 @@
       // Downloads queue server-side under this user's own downloads permission.
       const res = await api.post('/api/requests/' + r.id + '/approve', { download }).catch((e) => ({ error: String(e) }));
       if (res.error) return alertNote(res.error);
-      loadQueue();
+      await loadQueue();
+      // A book no source has yet stays approved-and-waiting; say so.
+      if ((r.kind === 'ebook' || r.kind === 'audiobook') && res.fulfilled === false) {
+        listEl.insertAdjacentHTML('afterbegin', '<div class="rq__note">Approved. No source has “' + esc(r.title || '') + '” yet — it will be added when one does, and the requester will be told.</div>');
+      }
     }
 
     function declineFlow(el, r) {
@@ -252,14 +292,41 @@
     async function doSearch() {
       const q = overlay.querySelector('.rq__search').value.trim();
       if (!q) return;
-      gridEl.innerHTML = '<div class="rq__note">Searching ComicVine…</div>';
+      const k = kind;
+      gridEl.innerHTML = '<div class="rq__note">' + (k === 'comic' ? 'Searching ComicVine…' : 'Searching…') + '</div>';
       let r;
-      try { r = await api.get('/api/requests/search?q=' + encodeURIComponent(q)); }
+      try { r = await api.get('/api/requests/search?q=' + encodeURIComponent(q) + (k === 'comic' ? '' : '&kind=' + k)); }
       catch (e) { gridEl.innerHTML = '<div class="rq__note rq__note--bad">' + esc(String(e)) + '</div>'; return; }
       if (r.error) { gridEl.innerHTML = '<div class="rq__note rq__note--bad">' + esc(r.error) + '</div>'; return; }
       gridEl.innerHTML = '';
-      if (!(r.results || []).length) { gridEl.innerHTML = '<div class="rq__note">No volumes found for “' + esc(q) + '”.</div>'; return; }
-      for (const v of r.results) gridEl.appendChild(resultCard(v));
+      if (!(r.results || []).length) { gridEl.innerHTML = '<div class="rq__note">Nothing found for “' + esc(q) + '”.</div>'; return; }
+      for (const v of r.results) gridEl.appendChild(k === 'comic' ? resultCard(v) : itemCard(v));
+    }
+
+    // A book or audiobook result: author and year where a volume shows its
+    // publisher and issue count; square art for audio.
+    function itemCard(v) {
+      const el = document.createElement('div');
+      el.className = 'rq-card';
+      const meta = [v.author, v.year, v.extra].filter(Boolean).map(esc).join(' · ');
+      el.innerHTML =
+        '<div class="rq-card__coverwrap' + (v.kind === 'audiobook' ? ' rq-card__coverwrap--square' : '') + '">' + (v.cover ? '<img loading="lazy" src="' + esc(v.cover) + '" alt="">' : '<span class="rq-card__none">?</span>') + '</div>' +
+        '<div class="rq-card__body">' +
+          '<div class="rq-card__title" title="' + esc(v.title || '') + '">' + esc(v.title || '?') + '</div>' +
+          '<div class="rq-card__meta">' + (meta || '&nbsp;') + '</div>' +
+          '<div class="rq-card__action"></div>' +
+        '</div>';
+      const action = el.querySelector('.rq-card__action');
+      if (v.inLibrary) action.innerHTML = '<span class="rq-card__state">✓ In library</span>';
+      else if (v.requestId) action.innerHTML = '<span class="rq-card__state">📥 Already requested</span>';
+      else {
+        const b = document.createElement('button');
+        b.className = 'btn btn--primary btn--sm';
+        b.textContent = 'Request';
+        b.onclick = () => requestFlow(el, { kind: v.kind, externalId: v.id, title: v.title, author: v.author, year: v.year, cover: v.cover }, b);
+        action.appendChild(b);
+      }
+      return el;
     }
 
     function resultCard(v) {
@@ -280,26 +347,28 @@
         const b = document.createElement('button');
         b.className = 'btn btn--primary btn--sm';
         b.textContent = 'Request';
-        b.onclick = () => requestFlow(el, v, b);
+        b.onclick = () => requestFlow(el, { comicvineId: v.id }, b);
         action.appendChild(b);
       }
       return el;
     }
 
-    function requestFlow(el, v, btn) {
+    // `body` is what POST /api/requests needs for this kind of thing (a
+    // comicvineId, or a kind + externalId with what the card showed).
+    function requestFlow(el, body, btn) {
       if (el.querySelector('.rq-noteform')) return;
       const form = document.createElement('form');
       form.className = 'rq-noteform';
-      form.innerHTML = '<input type="text" maxlength="500" placeholder="Why / which printing? (optional)"><button class="btn btn--sm btn--primary">Send request</button>';
+      form.innerHTML = '<input type="text" maxlength="500" placeholder="' + (body.comicvineId ? 'Why / which printing? (optional)' : 'Why / which edition? (optional)') + '"><button class="btn btn--sm btn--primary">Send request</button>';
       form.onsubmit = async (e) => {
         e.preventDefault();
         btn.disabled = true;
-        const res = await api.post('/api/requests', { comicvineId: v.id, note: form.querySelector('input').value }).catch((x) => ({ error: String(x) }));
+        const res = await api.post('/api/requests', { ...body, note: form.querySelector('input').value }).catch((x) => ({ error: String(x) }));
         form.remove();
         const action = el.querySelector('.rq-card__action');
         if (res.error) { action.innerHTML = '<span class="rq-card__state rq-card__state--bad">' + esc(res.error) + '</span>'; return; }
         action.innerHTML = '<span class="rq-card__state">' +
-          (res.autoApproved ? '✓ Approved &amp; added' : res.seconded ? '📥 Seconded the existing request' : '📥 Requested') + '</span>';
+          (res.autoApproved ? (res.fulfilled === false ? '✓ Approved — added when a source has it' : '✓ Approved &amp; added') : res.seconded ? '📥 Seconded the existing request' : '📥 Requested') + '</span>';
         refreshBadge();
       };
       el.querySelector('.rq-card__body').appendChild(form);

@@ -87,3 +87,18 @@
 .rq-card__action { margin-top: auto; }
 .rq-card__state { font-size: 12px; color: #46c46e; }
 .rq-card__state--bad { color: #e5484d; }
+
+/* kinds: what is being asked for */
+.rq__kinds { display: flex; gap: 6px; padding: 12px 16px 0; }
+.rq__kind {
+  padding: 4px 12px; border: 1px solid #2a2a33; border-radius: 999px;
+  background: none; color: #9a9aa5; font: 12px inherit; cursor: pointer;
+}
+.rq__kind.is-active { color: #fff; background: #1d1d27; }
+.rq-kind {
+  display: inline-block; margin-right: 6px; padding: 1px 6px; border-radius: 4px;
+  font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; vertical-align: 1px;
+}
+.rq-kind--ebook { color: #ffc24b; border: 1px solid rgba(255, 194, 75, .4); }
+.rq-kind--audiobook { color: #46c46e; border: 1px solid rgba(70, 196, 110, .4); }
+.rq-card__coverwrap--square { height: 56px; }

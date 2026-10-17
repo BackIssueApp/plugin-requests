@@ -1,0 +1,97 @@
+{
+  "menu": {
+    "label": "Richieste",
+    "title": "Richiedi serie per la biblioteca"
+  },
+  "settings": {
+    "autoApprove": "Richieste: approvazione automatica",
+    "autoApproveNote": "Ogni richiesta di serie viene approvata e aggiunta subito alla biblioteca, senza coda di revisione. Disattivato = i ruoli con «Gestisci richieste» approvano o rifiutano ciascuna. Se è attivo anche <b>Scarica all’aggiunta</b> (impostazioni di download), le richieste approvate automaticamente scaricano da sole gli albi mancanti, chiunque le abbia fatte.",
+    "westernOnly": "Richieste: solo fumetti occidentali",
+    "westernOnlyNote": "Si possono cercare e richiedere solo serie di editori occidentali (USA/Regno Unito); manga e titoli in lingua straniera sono nascosti. Usa una lista di editori consentiti.",
+    "noCollections": "Richieste: niente raccolte",
+    "noCollectionsNote": "Nasconde e blocca le edizioni raccolte (brossurati, cartonati, omnibus, raccolte «Complete» e simili), così si possono richiedere solo serie in albi singoli. Rilevato da titolo e descrizione della serie (il catalogo non ha un campo formato): coglie la stragrande maggioranza, ma non tutto."
+  },
+  "kinds": {
+    "comic": "Fumetti",
+    "ebook": "Libri",
+    "audiobook": "Audiolibri"
+  },
+  "hints": {
+    "comic": "Cerca serie… (es. Transmetropolitan)",
+    "ebook": "Cerca libri per titolo o autore…",
+    "audiobook": "Cerca audiolibri per titolo o autore…"
+  },
+  "dialog": {
+    "label": "Richieste di serie",
+    "title": "Richieste",
+    "tabQueue": "Richieste",
+    "tabFind": "Cerca e richiedi",
+    "close": "Chiudi (Esc)",
+    "search": "Cerca"
+  },
+  "filters": {
+    "all": "Tutte",
+    "pending": "In attesa",
+    "approved": "Approvate",
+    "declined": "Rifiutate",
+    "mine": "Le mie richieste"
+  },
+  "queue": {
+    "loading": "Caricamento…",
+    "loadFailed": "Impossibile caricare: {error}",
+    "empty": "Niente qui.",
+    "emptyAll": "Niente qui. Invia la prima richiesta da <b>Cerca e richiedi</b>."
+  },
+  "status": {
+    "pending": "in attesa",
+    "approved": "approvata",
+    "declined": "rifiutata",
+    "available": "disponibile"
+  },
+  "row": {
+    "issues": {
+      "one": "{count} albo",
+      "other": "{count} albi"
+    },
+    "onDisk": "{owned}/{total} su disco",
+    "kindBook": "Libro",
+    "kindAudiobook": "Audiolibro",
+    "untitledVolume": "Serie {id}",
+    "untitled": "Senza titolo",
+    "by": "di <b>{name}</b> · {date}",
+    "declinedReason": "Rifiutata: {reason}",
+    "removeVote": "Rimuovi il tuo voto",
+    "second": "Sostieni questa richiesta",
+    "approve": "✓ Approva",
+    "approveTitle": "Approva: aggiunge la serie alla biblioteca",
+    "approveDownloadTitle": "Approva e scarica tutti gli albi",
+    "approveBookTitle": "Approva: lo cerca nelle tue fonti di download",
+    "declineTitle": "Rifiuta con un motivo",
+    "deleteTitle": "Elimina questa richiesta",
+    "withdrawTitle": "Ritira la tua richiesta",
+    "downloading": "Download da {source}",
+    "downloadingRelease": "Download da {source} · {release}",
+    "downloadFailed": "Download non riuscito: {error}; nuovo tentativo secondo la pianificazione",
+    "downloadFailedSource": "Download non riuscito ({source}): {error}; nuovo tentativo secondo la pianificazione",
+    "unknownError": "errore sconosciuto",
+    "approvedNote": "Approvata. {note}"
+  },
+  "decline": {
+    "placeholder": "Motivo (visibile a chi ha fatto la richiesta)",
+    "button": "Rifiuta"
+  },
+  "find": {
+    "searching": "Ricerca in corso…",
+    "nothingFound": "Nessun risultato per «{query}».",
+    "inLibrary": "✓ In biblioteca",
+    "alreadyRequested": "📥 Già richiesto",
+    "request": "Richiedi",
+    "notePrinting": "Perché / quale ristampa? (facoltativo)",
+    "noteEdition": "Perché / quale edizione? (facoltativo)",
+    "send": "Invia richiesta",
+    "approvedWithNote": "✓ Approvata: {note}",
+    "approvedAdded": "✓ Approvata e aggiunta",
+    "seconded": "📥 Richiesta esistente sostenuta",
+    "requested": "📥 Richiesto"
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "menu": {
+    "label": "Requests",
+    "title": "Request volumes for the library"
+  },
+  "settings": {
+    "autoApprove": "Requests: auto-approve",
+    "autoApproveNote": "Every volume request is approved and added to the library instantly — no review queue. Off = roles with “Manage requests” approve or decline each one. When <b>Download on add</b> (Downloading settings) is also on, auto-approved requests download their missing issues automatically, regardless of who requested them.",
+    "westernOnly": "Requests: Western comics only",
+    "westernOnlyNote": "Only volumes from Western (US/UK) publishers can be searched and requested — manga and foreign-language titles are hidden. Uses a publisher allowlist.",
+    "noCollections": "Requests: no collections",
+    "noCollectionsNote": "Hide and block collected editions — trade paperbacks, hardcovers, omnibuses, “Complete” collections and the like — so only single-issue series can be requested. Detected from the volume’s title and description (the catalog has no format field), so it catches the vast majority but isn’t perfect."
+  },
+  "kinds": {
+    "comic": "Comics",
+    "ebook": "Books",
+    "audiobook": "Audiobooks"
+  },
+  "hints": {
+    "comic": "Search volumes… (e.g. Transmetropolitan)",
+    "ebook": "Search books by title or author…",
+    "audiobook": "Search audiobooks by title or author…"
+  },
+  "dialog": {
+    "label": "Volume requests",
+    "title": "Requests",
+    "tabQueue": "Requests",
+    "tabFind": "Find & request",
+    "close": "Close (Esc)",
+    "search": "Search"
+  },
+  "filters": {
+    "all": "All",
+    "pending": "Pending",
+    "approved": "Approved",
+    "declined": "Declined",
+    "mine": "My requests"
+  },
+  "queue": {
+    "loading": "Loading…",
+    "loadFailed": "Couldn’t load: {error}",
+    "empty": "Nothing here.",
+    "emptyAll": "Nothing here. File the first request from <b>Find & request</b>."
+  },
+  "status": {
+    "pending": "pending",
+    "approved": "approved",
+    "declined": "declined",
+    "available": "available"
+  },
+  "row": {
+    "issues": { "one": "{count} issue", "other": "{count} issues" },
+    "onDisk": "{owned}/{total} on disk",
+    "kindBook": "Book",
+    "kindAudiobook": "Audiobook",
+    "untitledVolume": "Volume {id}",
+    "untitled": "Untitled",
+    "by": "by <b>{name}</b> · {date}",
+    "declinedReason": "Declined: {reason}",
+    "removeVote": "Remove your vote",
+    "second": "Second this request",
+    "approve": "✓ Approve",
+    "approveTitle": "Approve — adds the volume to the library",
+    "approveDownloadTitle": "Approve + download every issue",
+    "approveBookTitle": "Approve — searches your download sources for it",
+    "declineTitle": "Decline with a reason",
+    "deleteTitle": "Delete this request",
+    "withdrawTitle": "Withdraw your request",
+    "downloading": "Downloading from {source}",
+    "downloadingRelease": "Downloading from {source} · {release}",
+    "downloadFailed": "Download failed: {error} — tried again on the schedule",
+    "downloadFailedSource": "Download failed ({source}): {error} — tried again on the schedule",
+    "unknownError": "unknown error",
+    "approvedNote": "Approved. {note}"
+  },
+  "decline": {
+    "placeholder": "Reason (shown to the requester)",
+    "button": "Decline"
+  },
+  "find": {
+    "searching": "Searching…",
+    "nothingFound": "Nothing found for “{query}”.",
+    "inLibrary": "✓ In library",
+    "alreadyRequested": "📥 Already requested",
+    "request": "Request",
+    "notePrinting": "Why / which printing? (optional)",
+    "noteEdition": "Why / which edition? (optional)",
+    "send": "Send request",
+    "approvedWithNote": "✓ Approved — {note}",
+    "approvedAdded": "✓ Approved & added",
+    "seconded": "📥 Seconded the existing request",
+    "requested": "📥 Requested"
+  }
+}

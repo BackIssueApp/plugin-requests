@@ -1,0 +1,97 @@
+{
+  "menu": {
+    "label": "Verzoeken",
+    "title": "Reeksen aanvragen voor de bibliotheek"
+  },
+  "settings": {
+    "autoApprove": "Verzoeken: automatisch goedkeuren",
+    "autoApproveNote": "Elk reeksverzoek wordt meteen goedgekeurd en aan de bibliotheek toegevoegd, zonder beoordelingswachtrij. Uit = rollen met ‘Verzoeken beheren’ keuren elk verzoek goed of af. Staat <b>Downloaden bij toevoegen</b> (downloadinstellingen) ook aan, dan downloaden automatisch goedgekeurde verzoeken hun ontbrekende nummers vanzelf, wie ze ook heeft aangevraagd.",
+    "westernOnly": "Verzoeken: alleen westerse comics",
+    "westernOnlyNote": "Alleen reeksen van westerse uitgevers (VS/VK) kunnen worden gezocht en aangevraagd; manga en anderstalige titels blijven verborgen. Gebruikt een lijst met toegestane uitgevers.",
+    "noCollections": "Verzoeken: geen bundels",
+    "noCollectionsNote": "Verbergt en blokkeert verzamelbundels (paperbacks, hardcovers, omnibussen, ‘Complete’-collecties en dergelijke), zodat alleen reeksen met losse nummers aangevraagd kunnen worden. Herkend aan titel en beschrijving van de reeks (de catalogus heeft geen formaatveld): vangt het overgrote deel, maar niet alles."
+  },
+  "kinds": {
+    "comic": "Comics",
+    "ebook": "Boeken",
+    "audiobook": "Luisterboeken"
+  },
+  "hints": {
+    "comic": "Reeksen zoeken… (bijv. Transmetropolitan)",
+    "ebook": "Boeken zoeken op titel of auteur…",
+    "audiobook": "Luisterboeken zoeken op titel of auteur…"
+  },
+  "dialog": {
+    "label": "Reeksverzoeken",
+    "title": "Verzoeken",
+    "tabQueue": "Verzoeken",
+    "tabFind": "Zoeken en aanvragen",
+    "close": "Sluiten (Esc)",
+    "search": "Zoeken"
+  },
+  "filters": {
+    "all": "Alle",
+    "pending": "In behandeling",
+    "approved": "Goedgekeurd",
+    "declined": "Afgewezen",
+    "mine": "Mijn verzoeken"
+  },
+  "queue": {
+    "loading": "Laden…",
+    "loadFailed": "Laden mislukt: {error}",
+    "empty": "Hier is niets.",
+    "emptyAll": "Hier is niets. Dien het eerste verzoek in via <b>Zoeken en aanvragen</b>."
+  },
+  "status": {
+    "pending": "in behandeling",
+    "approved": "goedgekeurd",
+    "declined": "afgewezen",
+    "available": "beschikbaar"
+  },
+  "row": {
+    "issues": {
+      "one": "{count} nummer",
+      "other": "{count} nummers"
+    },
+    "onDisk": "{owned}/{total} op schijf",
+    "kindBook": "Boek",
+    "kindAudiobook": "Luisterboek",
+    "untitledVolume": "Reeks {id}",
+    "untitled": "Zonder titel",
+    "by": "door <b>{name}</b> · {date}",
+    "declinedReason": "Afgewezen: {reason}",
+    "removeVote": "Je stem intrekken",
+    "second": "Dit verzoek steunen",
+    "approve": "✓ Goedkeuren",
+    "approveTitle": "Goedkeuren: voegt de reeks toe aan de bibliotheek",
+    "approveDownloadTitle": "Goedkeuren en alle nummers downloaden",
+    "approveBookTitle": "Goedkeuren: zoekt de titel in je downloadbronnen",
+    "declineTitle": "Afwijzen met een reden",
+    "deleteTitle": "Dit verzoek verwijderen",
+    "withdrawTitle": "Je verzoek intrekken",
+    "downloading": "Downloaden van {source}",
+    "downloadingRelease": "Downloaden van {source} · {release}",
+    "downloadFailed": "Download mislukt: {error}; wordt volgens schema opnieuw geprobeerd",
+    "downloadFailedSource": "Download mislukt ({source}): {error}; wordt volgens schema opnieuw geprobeerd",
+    "unknownError": "onbekende fout",
+    "approvedNote": "Goedgekeurd. {note}"
+  },
+  "decline": {
+    "placeholder": "Reden (zichtbaar voor de aanvrager)",
+    "button": "Afwijzen"
+  },
+  "find": {
+    "searching": "Zoeken…",
+    "nothingFound": "Niets gevonden voor ‘{query}’.",
+    "inLibrary": "✓ In de bibliotheek",
+    "alreadyRequested": "📥 Al aangevraagd",
+    "request": "Aanvragen",
+    "notePrinting": "Waarom / welke druk? (optioneel)",
+    "noteEdition": "Waarom / welke editie? (optioneel)",
+    "send": "Verzoek versturen",
+    "approvedWithNote": "✓ Goedgekeurd: {note}",
+    "approvedAdded": "✓ Goedgekeurd en toegevoegd",
+    "seconded": "📥 Bestaand verzoek gesteund",
+    "requested": "📥 Aangevraagd"
+  }
+}

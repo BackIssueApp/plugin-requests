@@ -1,13 +1,25 @@
 // Requests client — injected via window.BackIssue. Adds a "Requests" entry
 // to the sidebar's plugin area (with a pending-count badge for reviewers)
 // opening a full-screen overlay: the request queue (vote / approve / decline
-// / withdraw) and a search tab for filing new requests — ComicVine for
-// comics, and books / audiobooks where the server offers them. Every
+// / withdraw) and a search tab for filing new requests — the metadata source
+// for comics, and books / audiobooks where the server offers them. Every
 // affordance is gated on the session's actual permissions from /api/auth/me
 // — the server enforces them regardless.
 (function () {
   window.BackIssue.registerClient((api) => {
     const esc = api.escapeHtml;
+    // Translations: api.t when the host has it (BackIssue > 0.9.0), the inline
+    // English otherwise. Catalog: locales/<lang>.json, namespace "requests".
+    // `en` may be a { one, other } pair; the fallback picks on params.count.
+    const fill = (s, p) => {
+      if (s && typeof s === 'object') s = p && Number(p.count) === 1 ? s.one : s.other;
+      return p ? String(s).replace(/\{(\w+)\}/g, (m, k) => (p[k] === undefined || p[k] === null ? m : String(p[k]))) : String(s);
+    };
+    const tr = (key, en, params) => { if (typeof api.t !== 'function') return fill(en, params); const v = api.t('requests.' + key, params); return v === 'requests.' + key ? fill(en, params) : v; };
+    const trh = (key, en, params) => (typeof api.th === 'function' && api.t('requests.' + key) !== 'requests.' + key ? api.th('requests.' + key, params) : fill(en, params));
+    // Escaped-param variant of the fallback for markup messages built by hand.
+    const escParams = (p) => Object.fromEntries(Object.entries(p || {}).map(([k, v]) => [k, esc(String(v ?? ''))]));
+
     let overlay = null, listEl = null, gridEl = null, tabsEl = null, badgeEl = null;
     let activeTab = 'queue';           // 'queue' | 'find'
     let statusFilter = 'all';          // all | pending | approved | declined | mine
@@ -16,8 +28,12 @@
     // What may be asked for here; comics always, the rest per the server.
     let media = { comic: true, ebook: false, audiobook: false };
     let kind = 'comic';
-    const KIND_LABEL = { comic: 'Comics', ebook: 'Books', audiobook: 'Audiobooks' };
-    const KIND_HINT = { comic: 'Search ComicVine volumes… (e.g. Transmetropolitan)', ebook: 'Search books by title or author…', audiobook: 'Search audiobooks by title or author…' };
+    const KIND_LABEL = { comic: () => tr('kinds.comic', 'Comics'), ebook: () => tr('kinds.ebook', 'Books'), audiobook: () => tr('kinds.audiobook', 'Audiobooks') };
+    const KIND_HINT = {
+      comic: () => tr('hints.comic', 'Search volumes… (e.g. Transmetropolitan)'),
+      ebook: () => tr('hints.ebook', 'Search books by title or author…'),
+      audiobook: () => tr('hints.audiobook', 'Search audiobooks by title or author…'),
+    };
 
     // ---- permissions ----
     // The bridge exposes the already-resolved session (api.me) — zero extra
@@ -45,15 +61,15 @@
       block.innerHTML =
         '<div class="src-toggle">' +
           '<label class="switch"><input id="set-requestsAutoApprove" type="checkbox"><span class="switch__track"></span></label>' +
-          '<div class="src-toggle__text"><b>Requests: auto-approve</b><span class="modal__note src-toggle__note">Every volume request is approved and added to the library instantly — no review queue. Off = roles with “Manage requests” approve or decline each one. When <b>Download on add</b> (Downloading settings) is also on, auto-approved requests download their missing issues automatically, regardless of who requested them.</span></div>' +
+          '<div class="src-toggle__text"><b>' + esc(tr('settings.autoApprove', 'Requests: auto-approve')) + '</b><span class="modal__note src-toggle__note">' + trh('settings.autoApproveNote', 'Every volume request is approved and added to the library instantly — no review queue. Off = roles with “Manage requests” approve or decline each one. When <b>Download on add</b> (Downloading settings) is also on, auto-approved requests download their missing issues automatically, regardless of who requested them.') + '</span></div>' +
         '</div>' +
         '<div class="src-toggle">' +
           '<label class="switch"><input id="set-requestsWesternOnly" type="checkbox"><span class="switch__track"></span></label>' +
-          '<div class="src-toggle__text"><b>Requests: Western comics only</b><span class="modal__note src-toggle__note">Only volumes from Western (US/UK) publishers can be searched and requested — manga and foreign-language titles are hidden. Uses a publisher allowlist.</span></div>' +
+          '<div class="src-toggle__text"><b>' + esc(tr('settings.westernOnly', 'Requests: Western comics only')) + '</b><span class="modal__note src-toggle__note">' + esc(tr('settings.westernOnlyNote', 'Only volumes from Western (US/UK) publishers can be searched and requested — manga and foreign-language titles are hidden. Uses a publisher allowlist.')) + '</span></div>' +
         '</div>' +
         '<div class="src-toggle">' +
           '<label class="switch"><input id="set-requestsNoCollections" type="checkbox"><span class="switch__track"></span></label>' +
-          '<div class="src-toggle__text"><b>Requests: no collections</b><span class="modal__note src-toggle__note">Hide and block collected editions — trade paperbacks, hardcovers, omnibuses, “Complete” collections and the like — so only single-issue series can be requested. Detected from the volume’s title and description (ComicVine has no format field), so it catches the vast majority but isn’t perfect.</span></div>' +
+          '<div class="src-toggle__text"><b>' + esc(tr('settings.noCollections', 'Requests: no collections')) + '</b><span class="modal__note src-toggle__note">' + esc(tr('settings.noCollectionsNote', 'Hide and block collected editions — trade paperbacks, hardcovers, omnibuses, “Complete” collections and the like — so only single-issue series can be requested. Detected from the volume’s title and description (the catalog has no format field), so it catches the vast majority but isn’t perfect.')) + '</span></div>' +
         '</div>';
       setSlot.appendChild(block);
     }
@@ -75,9 +91,9 @@
       await loadPerms();
       if (!canCreate) return; // no permission → no surface at all
       // Host SVG icon set (matches core nav); glyph fallback for older hosts.
-      btn = api.addMenuAction('Requests', openRequests, (api.icon && api.icon('mail')) || '✉', { section: 'Discover' });
+      btn = api.addMenuAction(tr('menu.label', 'Requests'), openRequests, (api.icon && api.icon('mail')) || '✉', { section: 'Discover' });
       btn.id = 'requests-btn';
-      btn.title = 'Request volumes for the library';
+      btn.title = tr('menu.title', 'Request volumes for the library');
       badgeEl = document.createElement('span');
       badgeEl.className = 'rq-badge';
       badgeEl.hidden = true;
@@ -103,14 +119,14 @@
       overlay.className = 'rq';
       overlay.innerHTML =
         '<div class="rq__backdrop"></div>' +
-        '<div class="rq__panel" role="dialog" aria-label="Volume requests">' +
+        '<div class="rq__panel" role="dialog" aria-label="' + esc(tr('dialog.label', 'Volume requests')) + '">' +
           '<div class="rq__head">' +
-            '<div class="rq__title">📥 Requests</div>' +
+            '<div class="rq__title">📥 ' + esc(tr('dialog.title', 'Requests')) + '</div>' +
             '<div class="rq__tabs">' +
-              '<button class="rq__tab" data-tab="queue">Requests</button>' +
-              '<button class="rq__tab" data-tab="find">Find &amp; request</button>' +
+              '<button class="rq__tab" data-tab="queue">' + esc(tr('dialog.tabQueue', 'Requests')) + '</button>' +
+              '<button class="rq__tab" data-tab="find">' + esc(tr('dialog.tabFind', 'Find & request')) + '</button>' +
             '</div>' +
-            '<button class="rq__close" title="Close (Esc)">✕</button>' +
+            '<button class="rq__close" title="' + esc(tr('dialog.close', 'Close (Esc)')) + '">✕</button>' +
           '</div>' +
           '<div class="rq__body">' +
             '<div class="rq__queue">' +
@@ -119,7 +135,7 @@
             '</div>' +
             '<div class="rq__find" hidden>' +
               '<div class="rq__kinds" hidden></div>' +
-              '<form class="rq__searchform"><input type="search" class="rq__search" placeholder="Search ComicVine volumes… (e.g. Transmetropolitan)"><button class="btn btn--primary rq__go">Search</button></form>' +
+              '<form class="rq__searchform"><input type="search" class="rq__search" placeholder="' + esc(KIND_HINT.comic()) + '"><button class="btn btn--primary rq__go">' + esc(tr('dialog.search', 'Search')) + '</button></form>' +
               '<div class="rq__grid"></div>' +
             '</div>' +
           '</div>' +
@@ -135,10 +151,11 @@
       });
       for (const b of tabsEl.querySelectorAll('.rq__tab')) b.onclick = () => selectTab(b.dataset.tab);
       const filters = overlay.querySelector('.rq__filters');
+      const FILTER_LABEL = { all: 'All', pending: 'Pending', approved: 'Approved', declined: 'Declined', mine: 'My requests' };
       for (const f of ['all', 'pending', 'approved', 'declined', 'mine']) {
         const b = document.createElement('button');
         b.className = 'rq__filter'; b.dataset.f = f;
-        b.textContent = f === 'mine' ? 'My requests' : f[0].toUpperCase() + f.slice(1);
+        b.textContent = tr('filters.' + f, FILTER_LABEL[f]);
         b.onclick = () => { statusFilter = f; paintQueue(); };
         filters.appendChild(b);
       }
@@ -157,12 +174,12 @@
         const b = document.createElement('button');
         b.type = 'button';
         b.className = 'rq__kind' + (k === kind ? ' is-active' : '');
-        b.textContent = KIND_LABEL[k];
-        b.onclick = () => { kind = k; paintKinds(); gridEl.innerHTML = ''; overlay.querySelector('.rq__search').placeholder = KIND_HINT[k]; overlay.querySelector('.rq__search').focus(); };
+        b.textContent = KIND_LABEL[k]();
+        b.onclick = () => { kind = k; paintKinds(); gridEl.innerHTML = ''; overlay.querySelector('.rq__search').placeholder = KIND_HINT[k](); overlay.querySelector('.rq__search').focus(); };
         row.appendChild(b);
       }
       if (!media[kind]) kind = 'comic';
-      overlay.querySelector('.rq__search').placeholder = KIND_HINT[kind];
+      overlay.querySelector('.rq__search').placeholder = KIND_HINT[kind]();
     }
 
     function selectTab(key) {
@@ -176,10 +193,10 @@
 
     // ---- the queue ----
     async function loadQueue() {
-      listEl.innerHTML = '<div class="rq__note">Loading…</div>';
+      listEl.innerHTML = '<div class="rq__note">' + esc(tr('queue.loading', 'Loading…')) + '</div>';
       let r;
       try { r = await api.get('/api/requests'); }
-      catch (e) { listEl.innerHTML = '<div class="rq__note rq__note--bad">Couldn’t load: ' + esc(String(e)) + '</div>'; return; }
+      catch (e) { listEl.innerHTML = '<div class="rq__note rq__note--bad">' + esc(tr('queue.loadFailed', 'Couldn’t load: {error}', { error: String(e) })) + '</div>'; return; }
       lastRequests = r.requests || [];
       canManage = !!r.canManage;
       if (r.media) { media = { comic: true, ...r.media }; paintKinds(); }
@@ -195,35 +212,38 @@
         : r.status === statusFilter);
       listEl.innerHTML = '';
       if (!rows.length) {
-        listEl.innerHTML = '<div class="rq__note">Nothing here. ' + (statusFilter === 'all' ? 'File the first request from <b>Find &amp; request</b>.' : '') + '</div>';
+        listEl.innerHTML = '<div class="rq__note">' + (statusFilter === 'all'
+          ? trh('queue.emptyAll', 'Nothing here. File the first request from <b>Find &amp; request</b>.')
+          : esc(tr('queue.empty', 'Nothing here.'))) + '</div>';
         return;
       }
       for (const r of rows) listEl.appendChild(requestRow(r));
     }
 
-    const STATUS_LABEL = { pending: 'pending', approved: 'approved', declined: 'declined', available: 'available' };
+    const STATUS_EN = { pending: 'pending', approved: 'approved', declined: 'declined', available: 'available' };
     function requestRow(r) {
       const el = document.createElement('div');
       const k = r.kind || 'comic';
       el.className = 'rq-row rq-row--' + r.display;
       const meta = (k === 'comic'
-        ? [r.publisher, r.start_year, r.issue_count ? r.issue_count + ' issues' : null]
+        ? [r.publisher, r.start_year, r.issue_count ? tr('row.issues', { one: '{count} issue', other: '{count} issues' }, { count: r.issue_count }) : null]
         : [r.author, r.start_year, r.publisher]).filter(Boolean).map(esc).join(' · ');
       const progress = r.status === 'approved' && r.total > 0 && r.display !== 'available' && k === 'comic'
-        ? '<span class="rq-row__progress">' + r.owned + '/' + r.total + ' on disk</span>' : '';
-      const badge = k === 'comic' ? '' : '<span class="rq-kind rq-kind--' + k + '">' + (k === 'ebook' ? 'Book' : 'Audiobook') + '</span>';
+        ? '<span class="rq-row__progress">' + esc(tr('row.onDisk', '{owned}/{total} on disk', { owned: r.owned, total: r.total })) + '</span>' : '';
+      const badge = k === 'comic' ? '' : '<span class="rq-kind rq-kind--' + k + '">' + esc(k === 'ebook' ? tr('row.kindBook', 'Book') : tr('row.kindAudiobook', 'Audiobook')) + '</span>';
+      const title = r.title || (k === 'comic' ? tr('row.untitledVolume', 'Volume {id}', { id: r.cv_volume_id }) : tr('row.untitled', 'Untitled'));
       el.innerHTML =
         '<div class="rq-row__coverwrap">' + (r.cover_url ? '<img loading="lazy" src="' + esc(r.cover_url) + '" alt="">' : '') + '</div>' +
         '<div class="rq-row__main">' +
-          '<div class="rq-row__title">' + badge + esc(r.title || (k === 'comic' ? 'Volume ' + r.cv_volume_id : 'Untitled')) + '</div>' +
+          '<div class="rq-row__title">' + badge + esc(title) + '</div>' +
           '<div class="rq-row__meta">' + meta + '</div>' +
-          '<div class="rq-row__who">by <b>' + esc(r.requested_by_name || '?') + '</b> · ' + esc((r.created_at || '').slice(0, 10)) +
+          '<div class="rq-row__who">' + trh('row.by', 'by <b>{name}</b> · {date}', typeof api.th === 'function' ? { name: r.requested_by_name || '?', date: (r.created_at || '').slice(0, 10) } : escParams({ name: r.requested_by_name || '?', date: (r.created_at || '').slice(0, 10) })) +
             (r.note ? ' — <i>' + esc(r.note) + '</i>' : '') + '</div>' +
-          (r.status === 'declined' && r.decline_reason ? '<div class="rq-row__reason">Declined: ' + esc(r.decline_reason) + '</div>' : '') +
+          (r.status === 'declined' && r.decline_reason ? '<div class="rq-row__reason">' + esc(tr('row.declinedReason', 'Declined: {reason}', { reason: r.decline_reason })) + '</div>' : '') +
           downloadLine(r) +
         '</div>' +
-        '<span class="rq-row__status rq-row__status--' + r.display + '">' + (STATUS_LABEL[r.display] || r.display) + progress + '</span>' +
-        '<button class="rq-row__vote' + (r.voted ? ' is-on' : '') + '" title="' + (r.voted ? 'Remove your vote' : 'Second this request') + '">▲ ' + r.votes + '</button>' +
+        '<span class="rq-row__status rq-row__status--' + r.display + '">' + esc(STATUS_EN[r.display] ? tr('status.' + r.display, STATUS_EN[r.display]) : r.display) + progress + '</span>' +
+        '<button class="rq-row__vote' + (r.voted ? ' is-on' : '') + '" title="' + esc(r.voted ? tr('row.removeVote', 'Remove your vote') : tr('row.second', 'Second this request')) + '">▲ ' + r.votes + '</button>' +
         '<span class="rq-row__actions"></span>';
       el.querySelector('.rq-row__vote').onclick = async () => {
         const res = await api.post('/api/requests/' + r.id + '/vote', { on: !r.voted }).catch(() => null);
@@ -233,16 +253,16 @@
       if (r.status === 'pending' && canManage) {
         if (k === 'comic') {
           actions.append(
-            actionBtn('✓ Approve', 'Approve — adds the volume to the library', () => decide(r, false)),
-            actionBtn('✓⤓', 'Approve + download every issue', () => decide(r, true), !canDownload),
+            actionBtn(tr('row.approve', '✓ Approve'), tr('row.approveTitle', 'Approve — adds the volume to the library'), () => decide(r, false)),
+            actionBtn('✓⤓', tr('row.approveDownloadTitle', 'Approve + download every issue'), () => decide(r, true), !canDownload),
           );
         } else {
-          actions.append(actionBtn('✓ Approve', 'Approve — searches your download sources for it', () => decide(r, false)));
+          actions.append(actionBtn(tr('row.approve', '✓ Approve'), tr('row.approveBookTitle', 'Approve — searches your download sources for it'), () => decide(r, false)));
         }
-        actions.append(actionBtn('✗', 'Decline with a reason', () => declineFlow(el, r)));
+        actions.append(actionBtn('✗', tr('row.declineTitle', 'Decline with a reason'), () => declineFlow(el, r)));
       }
       if ((r.status === 'pending' && r.requested_by === me.id) || canManage) {
-        actions.append(actionBtn('🗑', canManage ? 'Delete this request' : 'Withdraw your request', async () => {
+        actions.append(actionBtn('🗑', canManage ? tr('row.deleteTitle', 'Delete this request') : tr('row.withdrawTitle', 'Withdraw your request'), async () => {
           const res = await fetch('/api/requests/' + r.id, { method: 'DELETE' }).then((x) => x.json()).catch(() => null);
           if (res && !res.error) loadQueue();
           else if (res?.error) alertNote(res.error);
@@ -256,8 +276,17 @@
     function downloadLine(r) {
       const d = r.download;
       if (!d || r.status !== 'approved' || r.display === 'available') return '';
-      if (d.status === 'active') return '<div class="rq-row__dl">Downloading from ' + esc(d.source) + (d.release ? ' · ' + esc(d.release) : '') + '</div>';
-      if (d.status === 'failed') return '<div class="rq-row__reason">Download failed' + (d.source ? ' (' + esc(d.source) + ')' : '') + ': ' + esc(d.error || 'unknown error') + ' — tried again on the schedule</div>';
+      if (d.status === 'active') {
+        return '<div class="rq-row__dl">' + esc(d.release
+          ? tr('row.downloadingRelease', 'Downloading from {source} · {release}', { source: d.source, release: d.release })
+          : tr('row.downloading', 'Downloading from {source}', { source: d.source })) + '</div>';
+      }
+      if (d.status === 'failed') {
+        const error = d.error || tr('row.unknownError', 'unknown error');
+        return '<div class="rq-row__reason">' + esc(d.source
+          ? tr('row.downloadFailedSource', 'Download failed ({source}): {error} — tried again on the schedule', { source: d.source, error })
+          : tr('row.downloadFailed', 'Download failed: {error} — tried again on the schedule', { error })) + '</div>';
+      }
       return '';
     }
 
@@ -278,7 +307,7 @@
       // A book: say what the download sources did with it.
       if (res.note) {
         const bad = ['no-match', 'no-sources', 'no-library', 'unsupported', 'error'].includes(res.download?.status);
-        listEl.insertAdjacentHTML('afterbegin', '<div class="rq__note' + (bad ? ' rq__note--warn' : '') + '">Approved. ' + esc(res.note) + '</div>');
+        listEl.insertAdjacentHTML('afterbegin', '<div class="rq__note' + (bad ? ' rq__note--warn' : '') + '">' + esc(tr('row.approvedNote', 'Approved. {note}', { note: res.note })) + '</div>');
       }
     }
 
@@ -286,7 +315,7 @@
       if (el.querySelector('.rq-declineform')) return;
       const form = document.createElement('form');
       form.className = 'rq-declineform';
-      form.innerHTML = '<input type="text" maxlength="500" placeholder="Reason (shown to the requester)"><button class="btn btn--sm btn--primary">Decline</button>';
+      form.innerHTML = '<input type="text" maxlength="500" placeholder="' + esc(tr('decline.placeholder', 'Reason (shown to the requester)')) + '"><button class="btn btn--sm btn--primary">' + esc(tr('decline.button', 'Decline')) + '</button>';
       form.onsubmit = async (e) => {
         e.preventDefault();
         const res = await api.post('/api/requests/' + r.id + '/decline', { reason: form.querySelector('input').value }).catch(() => null);
@@ -305,15 +334,17 @@
       const q = overlay.querySelector('.rq__search').value.trim();
       if (!q) return;
       const k = kind;
-      gridEl.innerHTML = '<div class="rq__note">' + (k === 'comic' ? 'Searching ComicVine…' : 'Searching…') + '</div>';
+      gridEl.innerHTML = '<div class="rq__note">' + esc(tr('find.searching', 'Searching…')) + '</div>';
       let r;
       try { r = await api.get('/api/requests/search?q=' + encodeURIComponent(q) + (k === 'comic' ? '' : '&kind=' + k)); }
       catch (e) { gridEl.innerHTML = '<div class="rq__note rq__note--bad">' + esc(String(e)) + '</div>'; return; }
       if (r.error) { gridEl.innerHTML = '<div class="rq__note rq__note--bad">' + esc(r.error) + '</div>'; return; }
       gridEl.innerHTML = '';
-      if (!(r.results || []).length) { gridEl.innerHTML = '<div class="rq__note">Nothing found for “' + esc(q) + '”.</div>'; return; }
+      if (!(r.results || []).length) { gridEl.innerHTML = '<div class="rq__note">' + esc(tr('find.nothingFound', 'Nothing found for “{query}”.', { query: q })) + '</div>'; return; }
       for (const v of r.results) gridEl.appendChild(k === 'comic' ? resultCard(v) : itemCard(v));
     }
+
+    const stateHtml = (key, en) => '<span class="rq-card__state">' + esc(tr(key, en)) + '</span>';
 
     // A book or audiobook result: author and year where a volume shows its
     // publisher and issue count; square art for audio.
@@ -329,12 +360,12 @@
           '<div class="rq-card__action"></div>' +
         '</div>';
       const action = el.querySelector('.rq-card__action');
-      if (v.inLibrary) action.innerHTML = '<span class="rq-card__state">✓ In library</span>';
-      else if (v.requestId) action.innerHTML = '<span class="rq-card__state">📥 Already requested</span>';
+      if (v.inLibrary) action.innerHTML = stateHtml('find.inLibrary', '✓ In library');
+      else if (v.requestId) action.innerHTML = stateHtml('find.alreadyRequested', '📥 Already requested');
       else {
         const b = document.createElement('button');
         b.className = 'btn btn--primary btn--sm';
-        b.textContent = 'Request';
+        b.textContent = tr('find.request', 'Request');
         b.onclick = () => requestFlow(el, { kind: v.kind, externalId: v.id, title: v.title, author: v.author, year: v.year, cover: v.cover }, b);
         action.appendChild(b);
       }
@@ -344,7 +375,7 @@
     function resultCard(v) {
       const el = document.createElement('div');
       el.className = 'rq-card';
-      const meta = [v.publisher, v.start_year, v.count_of_issues ? v.count_of_issues + ' issues' : null].filter(Boolean).map(esc).join(' · ');
+      const meta = [v.publisher, v.start_year, v.count_of_issues ? tr('row.issues', { one: '{count} issue', other: '{count} issues' }, { count: v.count_of_issues }) : null].filter(Boolean).map(esc).join(' · ');
       el.innerHTML =
         '<div class="rq-card__coverwrap">' + (v.image_url ? '<img loading="lazy" src="' + esc(v.image_url) + '" alt="">' : '<span class="rq-card__none">?</span>') + '</div>' +
         '<div class="rq-card__body">' +
@@ -353,12 +384,12 @@
           '<div class="rq-card__action"></div>' +
         '</div>';
       const action = el.querySelector('.rq-card__action');
-      if (v.inLibrary) action.innerHTML = '<span class="rq-card__state">✓ In library</span>';
-      else if (v.requestId) action.innerHTML = '<span class="rq-card__state">📥 Already requested</span>';
+      if (v.inLibrary) action.innerHTML = stateHtml('find.inLibrary', '✓ In library');
+      else if (v.requestId) action.innerHTML = stateHtml('find.alreadyRequested', '📥 Already requested');
       else {
         const b = document.createElement('button');
         b.className = 'btn btn--primary btn--sm';
-        b.textContent = 'Request';
+        b.textContent = tr('find.request', 'Request');
         b.onclick = () => requestFlow(el, { comicvineId: v.id }, b);
         action.appendChild(b);
       }
@@ -371,7 +402,7 @@
       if (el.querySelector('.rq-noteform')) return;
       const form = document.createElement('form');
       form.className = 'rq-noteform';
-      form.innerHTML = '<input type="text" maxlength="500" placeholder="' + (body.comicvineId ? 'Why / which printing? (optional)' : 'Why / which edition? (optional)') + '"><button class="btn btn--sm btn--primary">Send request</button>';
+      form.innerHTML = '<input type="text" maxlength="500" placeholder="' + esc(body.comicvineId ? tr('find.notePrinting', 'Why / which printing? (optional)') : tr('find.noteEdition', 'Why / which edition? (optional)')) + '"><button class="btn btn--sm btn--primary">' + esc(tr('find.send', 'Send request')) + '</button>';
       form.onsubmit = async (e) => {
         e.preventDefault();
         btn.disabled = true;
@@ -379,8 +410,10 @@
         form.remove();
         const action = el.querySelector('.rq-card__action');
         if (res.error) { action.innerHTML = '<span class="rq-card__state rq-card__state--bad">' + esc(res.error) + '</span>'; return; }
-        action.innerHTML = '<span class="rq-card__state">' +
-          (res.autoApproved ? (res.note ? '✓ Approved — ' + esc(res.note) : '✓ Approved &amp; added') : res.seconded ? '📥 Seconded the existing request' : '📥 Requested') + '</span>';
+        const text = res.autoApproved
+          ? (res.note ? tr('find.approvedWithNote', '✓ Approved — {note}', { note: res.note }) : tr('find.approvedAdded', '✓ Approved & added'))
+          : res.seconded ? tr('find.seconded', '📥 Seconded the existing request') : tr('find.requested', '📥 Requested');
+        action.innerHTML = '<span class="rq-card__state">' + esc(text) + '</span>';
         refreshBadge();
       };
       el.querySelector('.rq-card__body').appendChild(form);

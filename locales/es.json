@@ -1,0 +1,97 @@
+{
+  "menu": {
+    "label": "Peticiones",
+    "title": "Pedir series para la biblioteca"
+  },
+  "settings": {
+    "autoApprove": "Peticiones: aprobación automática",
+    "autoApproveNote": "Cada petición de serie se aprueba y se añade a la biblioteca al instante, sin cola de revisión. Desactivado = los roles con «Gestionar peticiones» aprueban o rechazan cada una. Si además está activado <b>Descargar al añadir</b> (ajustes de descarga), las peticiones aprobadas automáticamente descargan sus números que faltan, sin importar quién las pidió.",
+    "westernOnly": "Peticiones: solo cómics occidentales",
+    "westernOnlyNote": "Solo se pueden buscar y pedir series de editoriales occidentales (EE. UU./Reino Unido); el manga y los títulos en otros idiomas quedan ocultos. Usa una lista de editoriales permitidas.",
+    "noCollections": "Peticiones: sin recopilatorios",
+    "noCollectionsNote": "Oculta y bloquea las ediciones recopilatorias (tomos en rústica, tapa dura, ómnibus, colecciones «Complete» y similares) para que solo se puedan pedir series de números sueltos. Se detecta por el título y la descripción de la serie (el catálogo no tiene campo de formato), así que acierta en la gran mayoría, pero no siempre."
+  },
+  "kinds": {
+    "comic": "Cómics",
+    "ebook": "Libros",
+    "audiobook": "Audiolibros"
+  },
+  "hints": {
+    "comic": "Buscar series… (p. ej. Transmetropolitan)",
+    "ebook": "Buscar libros por título o autor…",
+    "audiobook": "Buscar audiolibros por título o autor…"
+  },
+  "dialog": {
+    "label": "Peticiones de series",
+    "title": "Peticiones",
+    "tabQueue": "Peticiones",
+    "tabFind": "Buscar y pedir",
+    "close": "Cerrar (Esc)",
+    "search": "Buscar"
+  },
+  "filters": {
+    "all": "Todas",
+    "pending": "Pendientes",
+    "approved": "Aprobadas",
+    "declined": "Rechazadas",
+    "mine": "Mis peticiones"
+  },
+  "queue": {
+    "loading": "Cargando…",
+    "loadFailed": "No se pudo cargar: {error}",
+    "empty": "Nada por aquí.",
+    "emptyAll": "Nada por aquí. Haz la primera petición desde <b>Buscar y pedir</b>."
+  },
+  "status": {
+    "pending": "pendiente",
+    "approved": "aprobada",
+    "declined": "rechazada",
+    "available": "disponible"
+  },
+  "row": {
+    "issues": {
+      "one": "{count} número",
+      "other": "{count} números"
+    },
+    "onDisk": "{owned}/{total} en disco",
+    "kindBook": "Libro",
+    "kindAudiobook": "Audiolibro",
+    "untitledVolume": "Serie {id}",
+    "untitled": "Sin título",
+    "by": "de <b>{name}</b> · {date}",
+    "declinedReason": "Rechazada: {reason}",
+    "removeVote": "Quitar tu voto",
+    "second": "Apoyar esta petición",
+    "approve": "✓ Aprobar",
+    "approveTitle": "Aprobar: añade la serie a la biblioteca",
+    "approveDownloadTitle": "Aprobar y descargar todos los números",
+    "approveBookTitle": "Aprobar: lo busca en tus fuentes de descarga",
+    "declineTitle": "Rechazar con un motivo",
+    "deleteTitle": "Eliminar esta petición",
+    "withdrawTitle": "Retirar tu petición",
+    "downloading": "Descargando desde {source}",
+    "downloadingRelease": "Descargando desde {source} · {release}",
+    "downloadFailed": "Descarga fallida: {error}; se reintenta según la programación",
+    "downloadFailedSource": "Descarga fallida ({source}): {error}; se reintenta según la programación",
+    "unknownError": "error desconocido",
+    "approvedNote": "Aprobada. {note}"
+  },
+  "decline": {
+    "placeholder": "Motivo (lo verá quien la pidió)",
+    "button": "Rechazar"
+  },
+  "find": {
+    "searching": "Buscando…",
+    "nothingFound": "No se encontró nada para «{query}».",
+    "inLibrary": "✓ En la biblioteca",
+    "alreadyRequested": "📥 Ya pedido",
+    "request": "Pedir",
+    "notePrinting": "¿Por qué / qué tirada? (opcional)",
+    "noteEdition": "¿Por qué / qué edición? (opcional)",
+    "send": "Enviar petición",
+    "approvedWithNote": "✓ Aprobada: {note}",
+    "approvedAdded": "✓ Aprobada y añadida",
+    "seconded": "📥 Se apoyó la petición existente",
+    "requested": "📥 Pedido"
+  }
+}

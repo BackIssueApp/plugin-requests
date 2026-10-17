@@ -8,6 +8,13 @@ by the maintainers when changes merge, so concurrent PRs don't conflict here.
 
 ## [Unreleased]
 
+### Added
+
+- **Translated UI.** The Requests overlay, its settings toggles and the sidebar
+  entry follow the language picked under Profile → Language on BackIssue
+  builds newer than 0.9.0, English on older ones. Translations ship for
+  French, German, Spanish, Italian, Portuguese and Dutch in `locales/`.
+
 ## [1.4.0] — 2026-09-12
 
 ### Added

@@ -375,7 +375,7 @@ export default function register(api) {
           notify(req, { type: 'request.approved', category: 'request', level: 'success', title: 'Request approved', body: `${item.title} was approved. ${downloadNote(f, approved)}`.trim() });
           return res.json({ request: store.get(request.id, uid(req)), autoApproved: true, download: f, note: downloadNote(f, approved) });
         }
-        notify(req, { type: 'request.filed', category: 'request', level: 'info', title: 'New request', body: `${uname(req)} requested ${item.title}${item.author ? ' by ' + item.author : ''}.` });
+        notify(req, { type: 'request.filed', category: 'request', level: 'info', title: 'New request', body: `${uname(req)} requested ${item.title}${item.author ? ' by ' + item.author : ''}.`, params: { user: uname(req), what: `${item.title}${item.author ? ' · ' + item.author : ''}` } });
         return res.json({ request });
       } catch (e) { return res.status(502).json({ error: String(e?.message || e) }); }
     }
@@ -411,7 +411,7 @@ export default function register(api) {
         return res.json({ request: store.get(request.id, uid(req)), autoApproved: true, seriesId: r.seriesId, queued });
       }
       // Heads-up for reviewers (broadcast; the webhook pings their channel).
-      notify(req, { type: 'request.filed', category: 'request', level: 'info', title: 'New request', body: `${uname(req)} requested ${vol.name}${vol.start_year ? ' (' + vol.start_year + ')' : ''}.` });
+      notify(req, { type: 'request.filed', category: 'request', level: 'info', title: 'New request', body: `${uname(req)} requested ${vol.name}${vol.start_year ? ' (' + vol.start_year + ')' : ''}.`, params: { user: uname(req), what: `${vol.name}${vol.start_year ? ' (' + vol.start_year + ')' : ''}` } });
       res.json({ request });
     } catch (e) { res.status(502).json({ error: String(e?.message || e) }); }
   }, { access: CAN_CREATE });

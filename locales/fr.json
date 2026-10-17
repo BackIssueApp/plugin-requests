@@ -93,5 +93,41 @@
     "approvedAdded": "✓ Approuvée et ajoutée",
     "seconded": "📥 Demande existante appuyée",
     "requested": "📥 Demandé"
+  },
+  "_shared": {
+    "plugins": {
+      "requests": {
+        "description": "Demandes : les utilisateurs demandent des comics, livres et livres audio, les curateurs approuvent — avec votes, notes et approbation automatique"
+      }
+    },
+    "permissions": {
+      "requests": {
+        "create": {
+          "label": "Demander des séries",
+          "description": "Rechercher et demander des comics, livres et livres audio pour la bibliothèque (et voter pour les demandes)"
+        },
+        "manage": {
+          "label": "Gérer les demandes",
+          "description": "Approuver ou refuser les demandes (l’approbation ajoute la série, le livre ou le livre audio à la bibliothèque)"
+        }
+      }
+    },
+    "jobs": {
+      "requests-fulfil": {
+        "label": "Satisfaire les demandes de livres approuvées"
+      }
+    },
+    "notifications": {
+      "requestApproved": {
+        "title": "Demande approuvée"
+      },
+      "requestDeclined": {
+        "title": "Demande refusée"
+      },
+      "requestFiled": {
+        "title": "Nouvelle demande",
+        "body": "{user} a demandé {what}."
+      }
+    }
   }
 }

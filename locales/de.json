@@ -93,5 +93,41 @@
     "approvedAdded": "✓ Genehmigt & hinzugefügt",
     "seconded": "📥 Bestehende Anfrage unterstützt",
     "requested": "📥 Angefragt"
+  },
+  "_shared": {
+    "plugins": {
+      "requests": {
+        "description": "Anfragen: Nutzer wünschen sich Comics, Bücher und Hörbücher, Kuratoren genehmigen — mit Abstimmungen, Notizen und automatischer Genehmigung"
+      }
+    },
+    "permissions": {
+      "requests": {
+        "create": {
+          "label": "Reihen anfragen",
+          "description": "Comics, Bücher und Hörbücher für die Bibliothek suchen und anfragen (und über Anfragen abstimmen)"
+        },
+        "manage": {
+          "label": "Anfragen verwalten",
+          "description": "Anfragen genehmigen oder ablehnen (eine Genehmigung fügt die Reihe, das Buch oder das Hörbuch der Bibliothek hinzu)"
+        }
+      }
+    },
+    "jobs": {
+      "requests-fulfil": {
+        "label": "Genehmigte Buchanfragen erfüllen"
+      }
+    },
+    "notifications": {
+      "requestApproved": {
+        "title": "Anfrage genehmigt"
+      },
+      "requestDeclined": {
+        "title": "Anfrage abgelehnt"
+      },
+      "requestFiled": {
+        "title": "Neue Anfrage",
+        "body": "{user} hat {what} angefragt."
+      }
+    }
   }
 }

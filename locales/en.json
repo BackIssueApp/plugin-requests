@@ -49,7 +49,10 @@
     "available": "available"
   },
   "row": {
-    "issues": { "one": "{count} issue", "other": "{count} issues" },
+    "issues": {
+      "one": "{count} issue",
+      "other": "{count} issues"
+    },
     "onDisk": "{owned}/{total} on disk",
     "kindBook": "Book",
     "kindAudiobook": "Audiobook",
@@ -90,5 +93,41 @@
     "approvedAdded": "✓ Approved & added",
     "seconded": "📥 Seconded the existing request",
     "requested": "📥 Requested"
+  },
+  "_shared": {
+    "plugins": {
+      "requests": {
+        "description": "Requests: users ask for comics, books and audiobooks, curators approve — with votes, notes, and auto-approve"
+      }
+    },
+    "permissions": {
+      "requests": {
+        "create": {
+          "label": "Request volumes",
+          "description": "Search and request comics, books and audiobooks for the library (and vote on requests)"
+        },
+        "manage": {
+          "label": "Manage requests",
+          "description": "Approve or decline requests (approval adds the volume, book or audiobook to the library)"
+        }
+      }
+    },
+    "jobs": {
+      "requests-fulfil": {
+        "label": "Fill approved book requests"
+      }
+    },
+    "notifications": {
+      "requestApproved": {
+        "title": "Request approved"
+      },
+      "requestDeclined": {
+        "title": "Request declined"
+      },
+      "requestFiled": {
+        "title": "New request",
+        "body": "{user} requested {what}."
+      }
+    }
   }
 }

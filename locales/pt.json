@@ -93,5 +93,41 @@
     "approvedAdded": "✓ Aprovado e adicionado",
     "seconded": "📥 Pedido existente apoiado",
     "requested": "📥 Pedido"
+  },
+  "_shared": {
+    "plugins": {
+      "requests": {
+        "description": "Pedidos: os utilizadores pedem banda desenhada, livros e audiolivros, os curadores aprovam, com votos, notas e aprovação automática"
+      }
+    },
+    "permissions": {
+      "requests": {
+        "create": {
+          "label": "Pedir séries",
+          "description": "Pesquisar e pedir banda desenhada, livros e audiolivros para a biblioteca (e votar nos pedidos)"
+        },
+        "manage": {
+          "label": "Gerir pedidos",
+          "description": "Aprovar ou recusar pedidos (a aprovação adiciona a série, o livro ou o audiolivro à biblioteca)"
+        }
+      }
+    },
+    "jobs": {
+      "requests-fulfil": {
+        "label": "Satisfazer os pedidos de livros aprovados"
+      }
+    },
+    "notifications": {
+      "requestApproved": {
+        "title": "Pedido aprovado"
+      },
+      "requestDeclined": {
+        "title": "Pedido recusado"
+      },
+      "requestFiled": {
+        "title": "Novo pedido",
+        "body": "{user} pediu {what}."
+      }
+    }
   }
 }

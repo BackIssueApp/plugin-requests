@@ -93,5 +93,41 @@
     "approvedAdded": "✓ Goedgekeurd en toegevoegd",
     "seconded": "📥 Bestaand verzoek gesteund",
     "requested": "📥 Aangevraagd"
+  },
+  "_shared": {
+    "plugins": {
+      "requests": {
+        "description": "Aanvragen: gebruikers vragen strips, boeken en luisterboeken aan, beheerders keuren goed, met stemmen, notities en automatisch goedkeuren"
+      }
+    },
+    "permissions": {
+      "requests": {
+        "create": {
+          "label": "Reeksen aanvragen",
+          "description": "Strips, boeken en luisterboeken voor de bibliotheek zoeken en aanvragen (en op aanvragen stemmen)"
+        },
+        "manage": {
+          "label": "Aanvragen beheren",
+          "description": "Aanvragen goedkeuren of afwijzen (goedkeuren voegt de reeks, het boek of het luisterboek toe aan de bibliotheek)"
+        }
+      }
+    },
+    "jobs": {
+      "requests-fulfil": {
+        "label": "Goedgekeurde boekaanvragen vervullen"
+      }
+    },
+    "notifications": {
+      "requestApproved": {
+        "title": "Aanvraag goedgekeurd"
+      },
+      "requestDeclined": {
+        "title": "Aanvraag afgewezen"
+      },
+      "requestFiled": {
+        "title": "Nieuwe aanvraag",
+        "body": "{user} heeft {what} aangevraagd."
+      }
+    }
   }
 }

@@ -1,0 +1,135 @@
+{
+  "menu": {
+    "label": "Prośby",
+    "title": "Zgłaszaj serie do biblioteki"
+  },
+  "settings": {
+    "autoApprove": "Prośby: automatyczne zatwierdzanie",
+    "autoApproveNote": "Każda prośba o serię jest od razu zatwierdzana i dodawana do biblioteki — bez kolejki do przeglądu. Wyłączone = role z uprawnieniem „Zarządzanie prośbami” zatwierdzają lub odrzucają każdą z nich. Gdy włączona jest też opcja <b>Pobieraj po dodaniu</b> (ustawienia pobierania), automatycznie zatwierdzone prośby same pobierają brakujące zeszyty, niezależnie od tego, kto o nie poprosił.",
+    "westernOnly": "Prośby: tylko komiksy zachodnie",
+    "westernOnlyNote": "Wyszukiwać i zgłaszać można tylko serie zachodnich wydawców (USA/UK) — manga i tytuły obcojęzyczne są ukryte. Korzysta z listy dozwolonych wydawców.",
+    "noCollections": "Prośby: bez wydań zbiorczych",
+    "noCollectionsNote": "Ukrywa i blokuje wydania zbiorcze — wydania w miękkiej i twardej oprawie, omnibusy, kolekcje „Complete” i podobne — tak aby można było zgłaszać tylko serie pojedynczych zeszytów. Rozpoznawane na podstawie tytułu i opisu serii (katalog nie ma pola formatu), więc wyłapuje zdecydowaną większość, ale nie jest doskonałe."
+  },
+  "kinds": {
+    "comic": "Komiksy",
+    "ebook": "Książki",
+    "audiobook": "Audiobooki"
+  },
+  "hints": {
+    "comic": "Szukaj serii… (np. Transmetropolitan)",
+    "ebook": "Szukaj książek według tytułu lub autora…",
+    "audiobook": "Szukaj audiobooków według tytułu lub autora…"
+  },
+  "dialog": {
+    "label": "Prośby o serie",
+    "title": "Prośby",
+    "tabQueue": "Prośby",
+    "tabFind": "Znajdź i zgłoś",
+    "close": "Zamknij (Esc)",
+    "search": "Szukaj"
+  },
+  "filters": {
+    "all": "Wszystkie",
+    "pending": "Oczekujące",
+    "approved": "Zatwierdzone",
+    "declined": "Odrzucone",
+    "mine": "Moje prośby"
+  },
+  "queue": {
+    "loading": "Wczytywanie…",
+    "loadFailed": "Nie udało się wczytać: {error}",
+    "empty": "Nic tu nie ma.",
+    "emptyAll": "Nic tu nie ma. Złóż pierwszą prośbę w zakładce <b>Znajdź i zgłoś</b>."
+  },
+  "status": {
+    "pending": "oczekuje",
+    "approved": "zatwierdzona",
+    "declined": "odrzucona",
+    "available": "dostępna"
+  },
+  "row": {
+    "issues": {
+      "one": "{count} zeszyt",
+      "few": "{count} zeszyty",
+      "many": "{count} zeszytów",
+      "other": "{count} zeszytu"
+    },
+    "onDisk": "{owned}/{total} na dysku",
+    "kindBook": "Książka",
+    "kindAudiobook": "Audiobook",
+    "untitledVolume": "Seria {id}",
+    "untitled": "Bez tytułu",
+    "by": "od <b>{name}</b> · {date}",
+    "declinedReason": "Odrzucono: {reason}",
+    "removeVote": "Wycofaj swój głos",
+    "second": "Poprzyj tę prośbę",
+    "approve": "✓ Zatwierdź",
+    "approveTitle": "Zatwierdź — dodaje serię do biblioteki",
+    "approveDownloadTitle": "Zatwierdź i pobierz wszystkie zeszyty",
+    "approveBookTitle": "Zatwierdź — szuka jej w twoich źródłach pobierania",
+    "declineTitle": "Odrzuć z podaniem powodu",
+    "deleteTitle": "Usuń tę prośbę",
+    "withdrawTitle": "Wycofaj swoją prośbę",
+    "downloading": "Pobieranie z {source}",
+    "downloadingRelease": "Pobieranie z {source} · {release}",
+    "downloadFailed": "Pobieranie nie powiodło się: {error} — ponowiona próba według harmonogramu",
+    "downloadFailedSource": "Pobieranie nie powiodło się ({source}): {error} — ponowiona próba według harmonogramu",
+    "unknownError": "nieznany błąd",
+    "approvedNote": "Zatwierdzono. {note}"
+  },
+  "decline": {
+    "placeholder": "Powód (widoczny dla zgłaszającego)",
+    "button": "Odrzuć"
+  },
+  "find": {
+    "searching": "Wyszukiwanie…",
+    "nothingFound": "Nic nie znaleziono dla „{query}”.",
+    "inLibrary": "✓ W bibliotece",
+    "alreadyRequested": "📥 Już zgłoszone",
+    "request": "Zgłoś",
+    "notePrinting": "Dlaczego / które wydanie? (opcjonalnie)",
+    "noteEdition": "Dlaczego / które wydanie? (opcjonalnie)",
+    "send": "Wyślij prośbę",
+    "approvedWithNote": "✓ Zatwierdzono — {note}",
+    "approvedAdded": "✓ Zatwierdzono i dodano",
+    "seconded": "📥 Poparto istniejącą prośbę",
+    "requested": "📥 Zgłoszono"
+  },
+  "_shared": {
+    "plugins": {
+      "requests": {
+        "description": "Prośby: użytkownicy proszą o komiksy, książki i audiobooki, a kuratorzy je zatwierdzają — z głosowaniem, notatkami i automatycznym zatwierdzaniem"
+      }
+    },
+    "permissions": {
+      "requests": {
+        "create": {
+          "label": "Zgłaszanie serii",
+          "description": "Wyszukiwanie i zgłaszanie komiksów, książek i audiobooków do biblioteki (oraz głosowanie na prośby)"
+        },
+        "manage": {
+          "label": "Zarządzanie prośbami",
+          "description": "Zatwierdzanie lub odrzucanie próśb (zatwierdzenie dodaje serię, książkę lub audiobook do biblioteki)"
+        }
+      }
+    },
+    "jobs": {
+      "requests-fulfil": {
+        "label": "Realizuj zatwierdzone prośby o książki"
+      }
+    },
+    "notifications": {
+      "requestApproved": {
+        "title": "Prośba zatwierdzona"
+      },
+      "requestDeclined": {
+        "title": "Prośba odrzucona"
+      },
+      "requestFiled": {
+        "title": "Nowa prośba",
+        "body": "{user} prosi o: {what}."
+      }
+    }
+  }
+}

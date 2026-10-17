@@ -1,0 +1,132 @@
+{
+  "menu": {
+    "label": "リクエスト",
+    "title": "ライブラリへのシリーズ追加をリクエスト"
+  },
+  "settings": {
+    "autoApprove": "リクエスト：自動承認",
+    "autoApproveNote": "シリーズのリクエストはすべて即座に承認され、ライブラリに追加されます。確認待ちのキューはありません。オフにすると、「リクエストの管理」権限を持つロールが 1 件ずつ承認または却下します。<b>追加時にダウンロード</b>（ダウンロード設定）もオンの場合、自動承認されたリクエストは、誰がリクエストしたかに関係なく未入手の号を自動でダウンロードします。",
+    "westernOnly": "リクエスト：欧米のコミックのみ",
+    "westernOnlyNote": "欧米（米国・英国）の出版社のシリーズのみ検索・リクエストできます。マンガや外国語のタイトルは非表示になります。出版社の許可リストを使用します。",
+    "noCollections": "リクエスト：合本を除外",
+    "noCollectionsNote": "トレードペーパーバック、ハードカバー、オムニバス、「Complete」コレクションなどの合本を非表示にしてブロックし、単号のシリーズのみリクエストできるようにします。シリーズのタイトルと説明から判定するため（カタログに形式の項目がないため）、大部分は検出できますが完全ではありません。"
+  },
+  "kinds": {
+    "comic": "コミック",
+    "ebook": "書籍",
+    "audiobook": "オーディオブック"
+  },
+  "hints": {
+    "comic": "シリーズを検索…（例：Transmetropolitan）",
+    "ebook": "タイトルまたは著者で書籍を検索…",
+    "audiobook": "タイトルまたは著者でオーディオブックを検索…"
+  },
+  "dialog": {
+    "label": "シリーズのリクエスト",
+    "title": "リクエスト",
+    "tabQueue": "リクエスト",
+    "tabFind": "探してリクエスト",
+    "close": "閉じる（Esc）",
+    "search": "検索"
+  },
+  "filters": {
+    "all": "すべて",
+    "pending": "保留中",
+    "approved": "承認済み",
+    "declined": "却下",
+    "mine": "自分のリクエスト"
+  },
+  "queue": {
+    "loading": "読み込み中…",
+    "loadFailed": "読み込めませんでした：{error}",
+    "empty": "何もありません。",
+    "emptyAll": "何もありません。<b>探してリクエスト</b>から最初のリクエストを送ってください。"
+  },
+  "status": {
+    "pending": "保留中",
+    "approved": "承認済み",
+    "declined": "却下",
+    "available": "利用可能"
+  },
+  "row": {
+    "issues": {
+      "other": "{count} 号"
+    },
+    "onDisk": "ディスク上 {owned}/{total}",
+    "kindBook": "書籍",
+    "kindAudiobook": "オーディオブック",
+    "untitledVolume": "シリーズ {id}",
+    "untitled": "無題",
+    "by": "<b>{name}</b> · {date}",
+    "declinedReason": "却下：{reason}",
+    "removeVote": "投票を取り消す",
+    "second": "このリクエストに賛成",
+    "approve": "✓ 承認",
+    "approveTitle": "承認 — シリーズをライブラリに追加します",
+    "approveDownloadTitle": "承認してすべての号をダウンロード",
+    "approveBookTitle": "承認 — ダウンロード元で検索します",
+    "declineTitle": "理由を付けて却下",
+    "deleteTitle": "このリクエストを削除",
+    "withdrawTitle": "自分のリクエストを取り下げる",
+    "downloading": "{source} からダウンロード中",
+    "downloadingRelease": "{source} からダウンロード中 · {release}",
+    "downloadFailed": "ダウンロードに失敗しました：{error} — スケジュールに従って再試行します",
+    "downloadFailedSource": "ダウンロードに失敗しました（{source}）：{error} — スケジュールに従って再試行します",
+    "unknownError": "不明なエラー",
+    "approvedNote": "承認しました。{note}"
+  },
+  "decline": {
+    "placeholder": "理由（リクエストした人に表示されます）",
+    "button": "却下"
+  },
+  "find": {
+    "searching": "検索中…",
+    "nothingFound": "「{query}」に一致するものはありません。",
+    "inLibrary": "✓ ライブラリ内",
+    "alreadyRequested": "📥 リクエスト済み",
+    "request": "リクエスト",
+    "notePrinting": "理由・希望する版（任意）",
+    "noteEdition": "理由・希望する版（任意）",
+    "send": "リクエストを送信",
+    "approvedWithNote": "✓ 承認されました — {note}",
+    "approvedAdded": "✓ 承認されて追加されました",
+    "seconded": "📥 既存のリクエストに賛成しました",
+    "requested": "📥 リクエストしました"
+  },
+  "_shared": {
+    "plugins": {
+      "requests": {
+        "description": "リクエスト：ユーザーがコミック、書籍、オーディオブックをリクエストし、管理者が承認します。投票、メモ、自動承認に対応"
+      }
+    },
+    "permissions": {
+      "requests": {
+        "create": {
+          "label": "シリーズのリクエスト",
+          "description": "ライブラリ用にコミック、書籍、オーディオブックを検索・リクエストします（リクエストへの投票も含む）"
+        },
+        "manage": {
+          "label": "リクエストの管理",
+          "description": "リクエストを承認または却下します（承認するとシリーズ、書籍、オーディオブックがライブラリに追加されます）"
+        }
+      }
+    },
+    "jobs": {
+      "requests-fulfil": {
+        "label": "承認済みの書籍リクエストを処理"
+      }
+    },
+    "notifications": {
+      "requestApproved": {
+        "title": "リクエストが承認されました"
+      },
+      "requestDeclined": {
+        "title": "リクエストが却下されました"
+      },
+      "requestFiled": {
+        "title": "新しいリクエスト",
+        "body": "{user} さんが {what} をリクエストしました。"
+      }
+    }
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "menu": {
+    "label": "请求",
+    "title": "请求将系列加入书库"
+  },
+  "settings": {
+    "autoApprove": "请求：自动批准",
+    "autoApproveNote": "每个系列请求都会立即被批准并加入书库——没有审核队列。关闭时，拥有“管理请求”权限的角色逐一批准或拒绝。若同时开启了<b>添加时下载</b>（下载设置），自动批准的请求会自动下载缺失的期，无论请求者是谁。",
+    "westernOnly": "请求：仅限欧美漫画",
+    "westernOnlyNote": "只能搜索和请求欧美（美国/英国）出版商的系列——日漫和外语作品会被隐藏。使用出版商白名单。",
+    "noCollections": "请求：不含合集",
+    "noCollectionsNote": "隐藏并阻止合集版本——平装合集、精装本、大合集、“Complete”全集等——只允许请求单期系列。根据系列标题和简介判断（目录中没有格式字段），能识别绝大多数，但并不完美。"
+  },
+  "kinds": {
+    "comic": "漫画",
+    "ebook": "图书",
+    "audiobook": "有声书"
+  },
+  "hints": {
+    "comic": "搜索系列…（例如 Transmetropolitan）",
+    "ebook": "按书名或作者搜索图书…",
+    "audiobook": "按书名或作者搜索有声书…"
+  },
+  "dialog": {
+    "label": "系列请求",
+    "title": "请求",
+    "tabQueue": "请求",
+    "tabFind": "查找并请求",
+    "close": "关闭（Esc）",
+    "search": "搜索"
+  },
+  "filters": {
+    "all": "全部",
+    "pending": "待处理",
+    "approved": "已批准",
+    "declined": "已拒绝",
+    "mine": "我的请求"
+  },
+  "queue": {
+    "loading": "加载中…",
+    "loadFailed": "无法加载：{error}",
+    "empty": "这里还没有内容。",
+    "emptyAll": "这里还没有内容。在<b>查找并请求</b>中提交第一个请求。"
+  },
+  "status": {
+    "pending": "待处理",
+    "approved": "已批准",
+    "declined": "已拒绝",
+    "available": "可用"
+  },
+  "row": {
+    "issues": {
+      "other": "{count} 期"
+    },
+    "onDisk": "磁盘上 {owned}/{total}",
+    "kindBook": "图书",
+    "kindAudiobook": "有声书",
+    "untitledVolume": "系列 {id}",
+    "untitled": "无标题",
+    "by": "<b>{name}</b> · {date}",
+    "declinedReason": "已拒绝：{reason}",
+    "removeVote": "撤回你的投票",
+    "second": "附议此请求",
+    "approve": "✓ 批准",
+    "approveTitle": "批准——将系列加入书库",
+    "approveDownloadTitle": "批准并下载所有期",
+    "approveBookTitle": "批准——在你的下载源中搜索",
+    "declineTitle": "填写理由并拒绝",
+    "deleteTitle": "删除此请求",
+    "withdrawTitle": "撤回你的请求",
+    "downloading": "正在从 {source} 下载",
+    "downloadingRelease": "正在从 {source} 下载 · {release}",
+    "downloadFailed": "下载失败：{error}——将按计划重试",
+    "downloadFailedSource": "下载失败（{source}）：{error}——将按计划重试",
+    "unknownError": "未知错误",
+    "approvedNote": "已批准。{note}"
+  },
+  "decline": {
+    "placeholder": "理由（会显示给请求者）",
+    "button": "拒绝"
+  },
+  "find": {
+    "searching": "搜索中…",
+    "nothingFound": "没有找到与“{query}”相关的内容。",
+    "inLibrary": "✓ 已在书库中",
+    "alreadyRequested": "📥 已被请求",
+    "request": "请求",
+    "notePrinting": "原因 / 哪个版本？（可选）",
+    "noteEdition": "原因 / 哪个版本？（可选）",
+    "send": "发送请求",
+    "approvedWithNote": "✓ 已批准——{note}",
+    "approvedAdded": "✓ 已批准并添加",
+    "seconded": "📥 已附议现有请求",
+    "requested": "📥 已请求"
+  },
+  "_shared": {
+    "plugins": {
+      "requests": {
+        "description": "请求：用户请求漫画、图书和有声书，管理员审批——支持投票、备注和自动批准"
+      }
+    },
+    "permissions": {
+      "requests": {
+        "create": {
+          "label": "请求系列",
+          "description": "为书库搜索并请求漫画、图书和有声书（并为请求投票）"
+        },
+        "manage": {
+          "label": "管理请求",
+          "description": "批准或拒绝请求（批准后会将系列、图书或有声书加入书库）"
+        }
+      }
+    },
+    "jobs": {
+      "requests-fulfil": {
+        "label": "处理已批准的图书请求"
+      }
+    },
+    "notifications": {
+      "requestApproved": {
+        "title": "请求已批准"
+      },
+      "requestDeclined": {
+        "title": "请求已拒绝"
+      },
+      "requestFiled": {
+        "title": "新请求",
+        "body": "{user} 请求了 {what}。"
+      }
+    }
+  }
+}

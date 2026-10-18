@@ -109,7 +109,7 @@ test('routes: viewer files + votes but cannot decide; trusted approves', async (
   const db = openDb(config.dbPath);
   registerRequests(pluginApi);
   const kicks = [];
-  const app = createApp({
+  const app = createApp({ openApiBeforeSetup: true,
     db, state: { queue: {} },
     getSettings: () => ({}), saveSettings: (b) => b,
     prepareRedownload: async () => {}, runDownloads: async () => kicks.push(1),

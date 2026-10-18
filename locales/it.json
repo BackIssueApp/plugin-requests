@@ -5,7 +5,7 @@
   },
   "settings": {
     "autoApprove": "Richieste: approvazione automatica",
-    "autoApproveNote": "Ogni richiesta di serie viene approvata e aggiunta subito alla biblioteca, senza coda di revisione. Disattivato = i ruoli con «Gestisci richieste» approvano o rifiutano ciascuna. Se è attivo anche <b>Scarica all’aggiunta</b> (impostazioni di download), le richieste approvate automaticamente scaricano da sole gli albi mancanti, chiunque le abbia fatte.",
+    "autoApproveNote": "Ogni richiesta viene approvata e aggiunta subito alla biblioteca, senza coda di revisione, e scaricata immediatamente, chiunque l’abbia fatta. Disattivato = i ruoli con «Gestisci richieste» approvano o rifiutano ciascuna; un’approvazione scarica solo se chi approva ha <b>Cercare e scaricare</b>.",
     "westernOnly": "Richieste: solo fumetti occidentali",
     "westernOnlyNote": "Si possono cercare e richiedere solo serie di editori occidentali (USA/Regno Unito); manga e titoli in lingua straniera sono nascosti. Usa una lista di editori consentiti.",
     "noCollections": "Richieste: niente raccolte",
@@ -66,6 +66,7 @@
     "approveTitle": "Approva: aggiunge la serie alla biblioteca",
     "approveDownloadTitle": "Approva e scarica tutti gli albi",
     "approveBookTitle": "Approva: lo cerca nelle tue fonti di download",
+    "approveBookNoDownloadTitle": "Approva: non puoi scaricare, quindi verrà segnato come disponibile quando una scansione o un’importazione lo porterà",
     "declineTitle": "Rifiuta con un motivo",
     "deleteTitle": "Elimina questa richiesta",
     "withdrawTitle": "Ritira la tua richiesta",
@@ -74,7 +75,8 @@
     "downloadFailed": "Download non riuscito: {error}; nuovo tentativo secondo la pianificazione",
     "downloadFailedSource": "Download non riuscito ({source}): {error}; nuovo tentativo secondo la pianificazione",
     "unknownError": "errore sconosciuto",
-    "approvedNote": "Approvata. {note}"
+    "approvedNote": "Approvata. {note}",
+    "approvedNoDownload": "Approvata. Non puoi scaricare, quindi non è stato scaricato nulla: verrà segnato come disponibile quando una scansione o un’importazione lo porterà."
   },
   "decline": {
     "placeholder": "Motivo (visibile a chi ha fatto la richiesta)",

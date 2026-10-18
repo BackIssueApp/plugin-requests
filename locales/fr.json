@@ -5,7 +5,7 @@
   },
   "settings": {
     "autoApprove": "Demandes : approbation automatique",
-    "autoApproveNote": "Chaque demande de série est approuvée et ajoutée à la bibliothèque immédiatement, sans file de validation. Désactivé = les rôles disposant de « Gérer les demandes » approuvent ou refusent chacune. Lorsque <b>Télécharger à l’ajout</b> (paramètres de téléchargement) est aussi activé, les demandes approuvées automatiquement téléchargent leurs numéros manquants, quel que soit le demandeur.",
+    "autoApproveNote": "Chaque demande est approuvée et ajoutée à la bibliothèque immédiatement, sans file de validation, et se télécharge aussitôt, quel que soit le demandeur. Désactivé = les rôles disposant de « Gérer les demandes » approuvent ou refusent chacune ; une approbation ne télécharge que si l’approbateur dispose de <b>Rechercher et télécharger</b>.",
     "westernOnly": "Demandes : comics occidentaux uniquement",
     "westernOnlyNote": "Seules les séries d’éditeurs occidentaux (États-Unis/Royaume-Uni) peuvent être recherchées et demandées ; les mangas et les titres en langue étrangère sont masqués. Utilise une liste d’éditeurs autorisés.",
     "noCollections": "Demandes : pas de recueils",
@@ -66,6 +66,7 @@
     "approveTitle": "Approuver : ajoute la série à la bibliothèque",
     "approveDownloadTitle": "Approuver et télécharger tous les numéros",
     "approveBookTitle": "Approuver : recherche le titre dans vos sources de téléchargement",
+    "approveBookNoDownloadTitle": "Approuver : vous ne pouvez pas télécharger, le titre sera donc marqué disponible dès qu’une analyse ou une importation l’apportera",
     "declineTitle": "Refuser avec un motif",
     "deleteTitle": "Supprimer cette demande",
     "withdrawTitle": "Retirer votre demande",
@@ -74,7 +75,8 @@
     "downloadFailed": "Échec du téléchargement : {error} ; nouvel essai selon la planification",
     "downloadFailedSource": "Échec du téléchargement ({source}) : {error} ; nouvel essai selon la planification",
     "unknownError": "erreur inconnue",
-    "approvedNote": "Approuvée. {note}"
+    "approvedNote": "Approuvée. {note}",
+    "approvedNoDownload": "Approuvée. Vous ne pouvez pas télécharger, rien n’a donc été récupéré : le titre sera marqué disponible quand une analyse ou une importation l’apportera."
   },
   "decline": {
     "placeholder": "Motif (visible par le demandeur)",

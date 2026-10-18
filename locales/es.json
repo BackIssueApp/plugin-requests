@@ -5,7 +5,7 @@
   },
   "settings": {
     "autoApprove": "Peticiones: aprobación automática",
-    "autoApproveNote": "Cada petición de serie se aprueba y se añade a la biblioteca al instante, sin cola de revisión. Desactivado = los roles con «Gestionar peticiones» aprueban o rechazan cada una. Si además está activado <b>Descargar al añadir</b> (ajustes de descarga), las peticiones aprobadas automáticamente descargan sus números que faltan, sin importar quién las pidió.",
+    "autoApproveNote": "Cada petición se aprueba y se añade a la biblioteca al instante, sin cola de revisión, y se descarga enseguida, sin importar quién la pidió. Desactivado = los roles con «Gestionar peticiones» aprueban o rechazan cada una; una aprobación solo descarga si quien aprueba tiene <b>Buscar y descargar</b>.",
     "westernOnly": "Peticiones: solo cómics occidentales",
     "westernOnlyNote": "Solo se pueden buscar y pedir series de editoriales occidentales (EE. UU./Reino Unido); el manga y los títulos en otros idiomas quedan ocultos. Usa una lista de editoriales permitidas.",
     "noCollections": "Peticiones: sin recopilatorios",
@@ -66,6 +66,7 @@
     "approveTitle": "Aprobar: añade la serie a la biblioteca",
     "approveDownloadTitle": "Aprobar y descargar todos los números",
     "approveBookTitle": "Aprobar: lo busca en tus fuentes de descarga",
+    "approveBookNoDownloadTitle": "Aprobar: no puedes descargar, así que se marcará como disponible cuando un escaneo o una importación lo traiga",
     "declineTitle": "Rechazar con un motivo",
     "deleteTitle": "Eliminar esta petición",
     "withdrawTitle": "Retirar tu petición",
@@ -74,7 +75,8 @@
     "downloadFailed": "Descarga fallida: {error}; se reintenta según la programación",
     "downloadFailedSource": "Descarga fallida ({source}): {error}; se reintenta según la programación",
     "unknownError": "error desconocido",
-    "approvedNote": "Aprobada. {note}"
+    "approvedNote": "Aprobada. {note}",
+    "approvedNoDownload": "Aprobada. No puedes descargar, así que no se ha descargado nada: se marcará como disponible cuando un escaneo o una importación lo traiga."
   },
   "decline": {
     "placeholder": "Motivo (lo verá quien la pidió)",

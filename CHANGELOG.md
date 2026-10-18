@@ -10,6 +10,15 @@ by the maintainers when changes merge, so concurrent PRs don't conflict here.
 
 ### Changed
 
+- **An approval downloads only when the approver may download.** Approving
+  a book or audiobook used to ask the download sources whatever the
+  approver's permission. Now it does so only for someone with **Search &
+  download**; otherwise the request is approved without a download (and the
+  scheduled retry leaves it alone), and it counts once a scan or import brings
+  it in. Comic approvals already worked this way.
+- **Auto-approve always downloads.** An auto-approved comic request now
+  queues its missing issues whoever requested it, without also needing
+  **Download on add**, the same as books and audiobooks.
 - **Approved book requests are retried every six hours.** The task that
   checks whether a request has arrived, and asks the download sources again,
   had no schedule, so it only ran when started by hand. Change or turn off

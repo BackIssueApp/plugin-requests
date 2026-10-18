@@ -51,6 +51,10 @@ export function openRequestsStore(dbPath) {
   // A book's ISBN, when its catalog knows one: the surest key a download
   // source can search by.
   if (!cols.includes('isbn')) db.exec('ALTER TABLE requests ADD COLUMN isbn TEXT');
+  // Whether the approval lets the download sources fetch it: set on
+  // auto-approve, or when the approver may download. Older approvals keep
+  // being filled as before.
+  if (!cols.includes('may_download')) db.exec('ALTER TABLE requests ADD COLUMN may_download INTEGER NOT NULL DEFAULT 1');
   // The original open-index was on cv_volume_id alone; a book row carries 0
   // there, so the partial index above excludes it and this one takes over.
   const idx = db.prepare("SELECT sql FROM sqlite_master WHERE name='idx_requests_open'").get()?.sql || '';
@@ -187,9 +191,9 @@ export function openRequestsStore(dbPath) {
       if (on) db.prepare('INSERT OR IGNORE INTO request_votes (request_id, user_id) VALUES (?, ?)').run(requestId, userId);
       else db.prepare('DELETE FROM request_votes WHERE request_id = ? AND user_id = ?').run(requestId, userId);
     },
-    approve(requestId, deciderName) {
-      db.prepare(`UPDATE requests SET status='approved', decided_by_name=?, decline_reason=NULL,
-                  decided_at=strftime('%Y-%m-%dT%H:%M:%SZ','now') WHERE id=?`).run(deciderName || null, requestId);
+    approve(requestId, deciderName, { download = true } = {}) {
+      db.prepare(`UPDATE requests SET status='approved', decided_by_name=?, decline_reason=NULL, may_download=?,
+                  decided_at=strftime('%Y-%m-%dT%H:%M:%SZ','now') WHERE id=?`).run(deciderName || null, download ? 1 : 0, requestId);
     },
     /** The issue a source (or a later scan) put in the library for a book request. */
     fulfil(requestId, issueId) {

@@ -257,3 +257,63 @@ test('store: book requests dedupe by catalog id and read availability from the e
     assert.equal(c.display, 'pending');
   } finally { try { store?.close(); } catch { /* already closed */ } rm(); }   // Windows: close before the dir goes
 });
+
+// Who an approval downloads for: auto-approve always fetches; a manual
+// approval fetches only when the approver may download (downloads.grab), and
+// the scheduled job then leaves that request alone too.
+test('book approvals download only for an approver who may download', async () => {
+  const { openDb } = await import('../../../src/db.js');
+  const { initUserTables, clearRoleCache } = await import('../../../src/users.js');
+  const register = (await import('../index.js')).default;
+  const config = (await import('../../../src/config.js')).default;
+  const { p: dir, rm } = tmpdir();
+  const oldDbPath = config.dbPath;
+  config.dbPath = path.join(dir, 'cat.db');
+  const core = openDb(config.dbPath);
+  initUserTables(core);
+  core.prepare("INSERT INTO libraries (name, type) VALUES ('Books', 'ebook')").run();
+  // A curator may decide requests but not download; trusted may do both.
+  core.prepare("INSERT INTO roles (name, label, permissions, builtin) VALUES ('curator', 'Curator', ?, 0)").run(JSON.stringify(['requests.manage']));
+  clearRoleCache();
+
+  const routes = new Map(); const jobs = []; const fetched = [];
+  register({
+    registerClientAsset() {}, registerSettings() {}, registerPermission() {},
+    registerRoute: (m, p, h) => routes.set(`${m} ${p}`, h),
+    registerJob: (j) => jobs.push(j),
+    onMediaDownload() {},
+    downloadMedia: async (o) => { fetched.push(o.ref); return { status: 'grabbed', source: 'Usenet', release: 'x' }; },
+  });
+  const call = async (key, user, params = {}) => {
+    let out;
+    const res = { status() { return res; }, json(b) { out = b; return res; } };
+    await routes.get(key)({ user, params, body: {}, app: { locals: {} } }, res);
+    return out;
+  };
+  const store = openRequestsStore(config.dbPath);
+  const book = (id) => ({ id, title: `Book ${id}`, author: 'A. Writer', publisher: null, year: null, cover: null });
+  try {
+    const curator = { id: 2, username: 'cura', role: 'curator' };
+    const trusted = { id: 3, username: 'trust', role: 'trusted' };
+
+    const a = store.createItem(9, 'reader', 'ebook', book('a'), null).request;
+    const r1 = await call('post /api/requests/:id/approve', curator, { id: a.id });
+    assert.equal(r1.request.status, 'approved');
+    assert.equal(r1.download.status, 'not-allowed');
+    assert.deepEqual(fetched, [], 'an approver who cannot download fetches nothing');
+
+    const b = store.createItem(9, 'reader', 'ebook', book('b'), null).request;
+    const r2 = await call('post /api/requests/:id/approve', trusted, { id: b.id });
+    assert.equal(r2.download.status, 'grabbed');
+    assert.deepEqual(fetched, [`requests:${b.id}`]);
+
+    // The job retries only what was allowed to download.
+    fetched.length = 0;
+    await jobs.find((j) => j.id === 'requests-fulfil').run();
+    assert.deepEqual(fetched, [`requests:${b.id}`], 'the curator-approved book is not fetched later either');
+  } finally {
+    store.close(); core.close();
+    config.dbPath = oldDbPath;
+    try { rm(); } catch { /* the plugin's own connection may hold the file on Windows */ }
+  }
+});

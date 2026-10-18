@@ -61,7 +61,7 @@
       block.innerHTML =
         '<div class="src-toggle">' +
           '<label class="switch"><input id="set-requestsAutoApprove" type="checkbox"><span class="switch__track"></span></label>' +
-          '<div class="src-toggle__text"><b>' + esc(tr('settings.autoApprove', 'Requests: auto-approve')) + '</b><span class="modal__note src-toggle__note">' + trh('settings.autoApproveNote', 'Every volume request is approved and added to the library instantly — no review queue. Off = roles with “Manage requests” approve or decline each one. When <b>Download on add</b> (Downloading settings) is also on, auto-approved requests download their missing issues automatically, regardless of who requested them.') + '</span></div>' +
+          '<div class="src-toggle__text"><b>' + esc(tr('settings.autoApprove', 'Requests: auto-approve')) + '</b><span class="modal__note src-toggle__note">' + trh('settings.autoApproveNote', 'Every request is approved and added to the library instantly — no review queue — and downloads right away, whoever requested it. Off = roles with “Manage requests” approve or decline each one; an approval downloads only when the approver has <b>Search &amp; download</b>.') + '</span></div>' +
         '</div>' +
         '<div class="src-toggle">' +
           '<label class="switch"><input id="set-requestsWesternOnly" type="checkbox"><span class="switch__track"></span></label>' +
@@ -257,7 +257,9 @@
             actionBtn('✓⤓', tr('row.approveDownloadTitle', 'Approve + download every issue'), () => decide(r, true), !canDownload),
           );
         } else {
-          actions.append(actionBtn(tr('row.approve', '✓ Approve'), tr('row.approveBookTitle', 'Approve — searches your download sources for it'), () => decide(r, false)));
+          actions.append(actionBtn(tr('row.approve', '✓ Approve'), canDownload
+            ? tr('row.approveBookTitle', 'Approve — searches your download sources for it')
+            : tr('row.approveBookNoDownloadTitle', 'Approve — you can’t download, so it is marked available once a scan or import brings it in'), () => decide(r, false)));
         }
         actions.append(actionBtn('✗', tr('row.declineTitle', 'Decline with a reason'), () => declineFlow(el, r)));
       }
@@ -305,7 +307,9 @@
       if (res.error) return alertNote(res.error);
       await loadQueue();
       // A book: say what the download sources did with it.
-      if (res.note) {
+      if (res.download?.status === 'not-allowed') {
+        listEl.insertAdjacentHTML('afterbegin', '<div class="rq__note">' + esc(tr('row.approvedNoDownload', 'Approved. You can’t download, so nothing was fetched — it is marked available when a scan or import brings it in.')) + '</div>');
+      } else if (res.note) {
         const bad = ['no-match', 'no-sources', 'no-library', 'unsupported', 'error'].includes(res.download?.status);
         listEl.insertAdjacentHTML('afterbegin', '<div class="rq__note' + (bad ? ' rq__note--warn' : '') + '">' + esc(tr('row.approvedNote', 'Approved. {note}', { note: res.note })) + '</div>');
       }

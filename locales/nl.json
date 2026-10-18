@@ -5,7 +5,7 @@
   },
   "settings": {
     "autoApprove": "Verzoeken: automatisch goedkeuren",
-    "autoApproveNote": "Elk reeksverzoek wordt meteen goedgekeurd en aan de bibliotheek toegevoegd, zonder beoordelingswachtrij. Uit = rollen met ‘Verzoeken beheren’ keuren elk verzoek goed of af. Staat <b>Downloaden bij toevoegen</b> (downloadinstellingen) ook aan, dan downloaden automatisch goedgekeurde verzoeken hun ontbrekende nummers vanzelf, wie ze ook heeft aangevraagd.",
+    "autoApproveNote": "Elk verzoek wordt meteen goedgekeurd en aan de bibliotheek toegevoegd, zonder beoordelingswachtrij, en direct gedownload, wie het ook heeft aangevraagd. Uit = rollen met ‘Verzoeken beheren’ keuren elk verzoek goed of af; een goedkeuring downloadt alleen als wie goedkeurt <b>Zoeken en downloaden</b> heeft.",
     "westernOnly": "Verzoeken: alleen westerse comics",
     "westernOnlyNote": "Alleen reeksen van westerse uitgevers (VS/VK) kunnen worden gezocht en aangevraagd; manga en anderstalige titels blijven verborgen. Gebruikt een lijst met toegestane uitgevers.",
     "noCollections": "Verzoeken: geen bundels",
@@ -66,6 +66,7 @@
     "approveTitle": "Goedkeuren: voegt de reeks toe aan de bibliotheek",
     "approveDownloadTitle": "Goedkeuren en alle nummers downloaden",
     "approveBookTitle": "Goedkeuren: zoekt de titel in je downloadbronnen",
+    "approveBookNoDownloadTitle": "Goedkeuren: je mag niet downloaden, dus de titel wordt beschikbaar gemeld zodra een scan of import hem binnenhaalt",
     "declineTitle": "Afwijzen met een reden",
     "deleteTitle": "Dit verzoek verwijderen",
     "withdrawTitle": "Je verzoek intrekken",
@@ -74,7 +75,8 @@
     "downloadFailed": "Download mislukt: {error}; wordt volgens schema opnieuw geprobeerd",
     "downloadFailedSource": "Download mislukt ({source}): {error}; wordt volgens schema opnieuw geprobeerd",
     "unknownError": "onbekende fout",
-    "approvedNote": "Goedgekeurd. {note}"
+    "approvedNote": "Goedgekeurd. {note}",
+    "approvedNoDownload": "Goedgekeurd. Je mag niet downloaden, dus er is niets opgehaald — de titel wordt beschikbaar gemeld zodra een scan of import hem binnenhaalt."
   },
   "decline": {
     "placeholder": "Reden (zichtbaar voor de aanvrager)",

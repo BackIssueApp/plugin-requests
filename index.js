@@ -7,9 +7,9 @@
 // hit as an on-demand entry — or leaves the request waiting, to be asked
 // again by the hourly job and satisfied by any later scan that matches.
 // Books and audiobooks only appear where the owning plugin is loaded and a
-// library of that type exists. Downloads after approval are triggered
-// CLIENT-side through the core download endpoint, so they run under the
-// acting user's own downloads permission — this plugin never escalates
+// library of that type exists. An approval downloads when auto-approve is
+// on (a server-wide choice) or when the approver holds downloads.grab;
+// otherwise it only adds to the library — this plugin never escalates
 // anyone's rights.
 import Database from 'better-sqlite3';
 import config from '../../src/config.js';
@@ -182,6 +182,8 @@ export default function register(api) {
       });
     } catch (e) { return { status: 'error', error: String(e?.message || e) }; }
   }
+  /** Fetch an approved book only when the approval allowed it. */
+  const fulfilIfAllowed = (r) => (r.may_download === 0 ? Promise.resolve({ status: 'not-allowed' }) : fulfil(r));
   const KIND_WORD = { ebook: 'book', audiobook: 'audiobook' };
   /** One line for the person who approved: what happened to the download. */
   function downloadNote(f, r) {
@@ -195,6 +197,7 @@ export default function register(api) {
       case 'no-library': return `There is no ${KIND_WORD[kindOf(r.kind)] || 'book'} library to file it into.`;
       case 'unsupported': return 'This version of the app cannot download books — update it to 0.8.4 or later.';
       case 'error': return `The download could not start: ${f.error}`;
+      case 'not-allowed': return `You can't download, so nothing was fetched — ${t} is marked available when a scan or import brings it in.`;
       default: return '';
     }
   }
@@ -235,6 +238,7 @@ export default function register(api) {
           }
           continue;
         }
+        if (r.may_download === 0) continue; // approved by someone who can't download
         const f = await fulfil(r).catch(() => null);
         if (f && ['grabbed', 'downloading', 'imported'].includes(f.status)) asked++;
         if (f?.status === 'no-sources' || f?.status === 'unsupported') break; // the same answer for every request
@@ -244,11 +248,9 @@ export default function register(api) {
   });
 
   // Queue every missing issue of the (just-added) volume and kick the core
-  // download worker. Normally gated by the acting user's own downloads.grab —
-  // the requester on auto-approve, the approver on a manual approve. `force`
-  // bypasses that gate: it's set when the SERVER is configured to auto-download
-  // added volumes (autoDownloadOnAdd), an admin-level automation that shouldn't
-  // hinge on which user happened to trigger it.
+  // download worker. Gated by the approver's own downloads.grab on a manual
+  // approve; `force` bypasses that for auto-approve, a server-wide choice
+  // that shouldn't hinge on which user happened to file the request.
   function queueVolumeDownloads(req, cvVolumeId, { force = false } = {}) {
     if (!force && !grants(req, 'downloads.grab')) return 0;
     const core = requireCoreDb();
@@ -405,11 +407,9 @@ export default function register(api) {
         const r = await addSeriesFromCv(requireCoreDb(), cv(), cvId);
         store.approve(request.id, 'auto-approve');
         wantVolume(cvId, request.id, uid(req));
-        // With auto-download-on-add configured, missing issues download for
-        // every auto-approved request regardless of the requester's own
-        // permission (it's a server-wide automation). Otherwise they still
-        // download when the requester's role may grab.
-        const queued = queueVolumeDownloads(req, cvId, { force: !!config.autoDownloadOnAdd });
+        // Auto-approve is the admin's say-so: missing issues download
+        // whoever filed the request.
+        const queued = queueVolumeDownloads(req, cvId, { force: true });
         notify(req, { type: 'request.approved', category: 'request', level: 'success', title: 'Request added', body: `${vol.name} was added to the library.` });
         return res.json({ request: store.get(request.id, uid(req)), autoApproved: true, seriesId: r.seriesId, queued });
       }
@@ -436,14 +436,15 @@ export default function register(api) {
     if (!r) return res.status(404).json({ error: 'no such request' });
     if (r.status !== 'pending') return res.status(400).json({ error: 'request already decided' });
     if (kindOf(r.kind) !== 'comic') {
-      // A book: approve, then ask the download sources for it. The requester
-      // is told now that it was approved, and again when the file lands.
+      // A book: approve, then — when the approver may download — ask the
+      // download sources for it. The requester is told now that it was
+      // approved, and again when the file lands.
       try {
-        store.approve(r.id, uname(req));
-        const f = await fulfil(store.get(r.id, uid(req)));
+        store.approve(r.id, uname(req), { download: grants(req, 'downloads.grab') });
+        const f = await fulfilIfAllowed(store.get(r.id, uid(req)));
         const after = store.get(r.id, uid(req));
         const started = ['grabbed', 'downloading', 'active'].includes(f?.status);
-        notify(req, { type: 'request.approved', category: 'request', level: 'success', title: 'Request approved', body: `Your request for ${r.title || 'a book'} was approved${f?.status === 'imported' ? ' and it is in the library now' : started ? ' and it is downloading' : ' — it will be added when a source has it'}.`, userId: r.requested_by });
+        notify(req, { type: 'request.approved', category: 'request', level: 'success', title: 'Request approved', body: `Your request for ${r.title || 'a book'} was approved${f?.status === 'imported' ? ' and it is in the library now' : started ? ' and it is downloading' : f?.status === 'not-allowed' ? ' — you will hear when it reaches the library' : ' — it will be added when a source has it'}.`, userId: r.requested_by });
         return res.json({ request: after, seriesId: after.series_id, download: f, note: downloadNote(f, r) });
       } catch (e) { return res.status(502).json({ error: String(e?.message || e) }); }
     }

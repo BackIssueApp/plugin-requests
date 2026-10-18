@@ -22,8 +22,8 @@ requesters hear about verdicts.
 Two options live in **Settings** (the plugin's block in the Sources area):
 
 - **Auto-approve** — every request is approved and added instantly, no queue.
-  When the core **Download on add** setting is also on, auto-approved requests
-  download their missing issues automatically, whoever requested them.
+  It also downloads them, whoever requested them. With it off, an approval
+  downloads only when the approver has **Search & download**.
 - **Western comics only** — restrict search and requests to Western (US/UK)
   publishers via an allowlist; manga and foreign-language titles are hidden.
 

@@ -5,7 +5,7 @@
   },
   "settings": {
     "autoApprove": "请求：自动批准",
-    "autoApproveNote": "每个系列请求都会立即被批准并加入书库——没有审核队列。关闭时，拥有“管理请求”权限的角色逐一批准或拒绝。若同时开启了<b>添加时下载</b>（下载设置），自动批准的请求会自动下载缺失的期，无论请求者是谁。",
+    "autoApproveNote": "每个请求都会立即被批准并加入书库——没有审核队列——并且马上下载，无论请求者是谁。关闭时，拥有“管理请求”权限的角色逐一批准或拒绝；只有批准者拥有<b>搜索和下载</b>权限时，批准才会触发下载。",
     "westernOnly": "请求：仅限欧美漫画",
     "westernOnlyNote": "只能搜索和请求欧美（美国/英国）出版商的系列——日漫和外语作品会被隐藏。使用出版商白名单。",
     "noCollections": "请求：不含合集",
@@ -65,6 +65,7 @@
     "approveTitle": "批准——将系列加入书库",
     "approveDownloadTitle": "批准并下载所有期",
     "approveBookTitle": "批准——在你的下载源中搜索",
+    "approveBookNoDownloadTitle": "批准——你没有下载权限，因此在扫描或导入将其带入后才会标记为可用",
     "declineTitle": "填写理由并拒绝",
     "deleteTitle": "删除此请求",
     "withdrawTitle": "撤回你的请求",
@@ -73,7 +74,8 @@
     "downloadFailed": "下载失败：{error}——将按计划重试",
     "downloadFailedSource": "下载失败（{source}）：{error}——将按计划重试",
     "unknownError": "未知错误",
-    "approvedNote": "已批准。{note}"
+    "approvedNote": "已批准。{note}",
+    "approvedNoDownload": "已批准。你没有下载权限，因此未获取任何内容——在扫描或导入将其带入后会标记为可用。"
   },
   "decline": {
     "placeholder": "理由（会显示给请求者）",

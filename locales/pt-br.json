@@ -5,7 +5,7 @@
   },
   "settings": {
     "autoApprove": "Pedidos: aprovação automática",
-    "autoApproveNote": "Cada pedido de série é aprovado e adicionado à biblioteca de imediato, sem fila de revisão. Desligado = os perfis com «Gerir pedidos» aprovam ou recusam cada um. Quando <b>Baixar ao adicionar</b> (configurações de download) também está ativado, os pedidos aprovados automaticamente baixam as edições em falta, independentemente de quem pediu.",
+    "autoApproveNote": "Cada pedido é aprovado e adicionado à biblioteca na hora, sem fila de revisão, e baixado em seguida, independentemente de quem pediu. Desligado = os perfis com «Gerir pedidos» aprovam ou recusam cada um; uma aprovação só baixa quando quem aprova tem <b>Procurar e baixar</b>.",
     "westernOnly": "Pedidos: apenas comics ocidentais",
     "westernOnlyNote": "Só é possível pesquisar e pedir séries de editoras ocidentais (EUA/Reino Unido); manga e títulos em outras línguas ficam ocultos. Usa uma lista de editoras permitidas.",
     "noCollections": "Pedidos: sem coletâneas",
@@ -66,6 +66,7 @@
     "approveTitle": "Aprovar: adiciona a série à biblioteca",
     "approveDownloadTitle": "Aprovar e baixar todas as edições",
     "approveBookTitle": "Aprovar: procura o título nas suas fontes de download",
+    "approveBookNoDownloadTitle": "Aprovar: você não pode baixar, então ele fica disponível quando uma varredura ou importação o trouxer",
     "declineTitle": "Recusar com um motivo",
     "deleteTitle": "Excluir este pedido",
     "withdrawTitle": "Retirar o seu pedido",
@@ -74,7 +75,8 @@
     "downloadFailed": "Download falhou: {error}; nova tentativa conforme o agendamento",
     "downloadFailedSource": "Download falhou ({source}): {error}; nova tentativa conforme o agendamento",
     "unknownError": "erro desconhecido",
-    "approvedNote": "Aprovado. {note}"
+    "approvedNote": "Aprovado. {note}",
+    "approvedNoDownload": "Aprovado. Você não pode baixar, então nada foi buscado: ele fica disponível quando uma varredura ou importação o trouxer."
   },
   "decline": {
     "placeholder": "Motivo (visível para quem pediu)",

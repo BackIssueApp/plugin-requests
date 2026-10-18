@@ -5,7 +5,7 @@
   },
   "settings": {
     "autoApprove": "Anfragen: automatisch genehmigen",
-    "autoApproveNote": "Jede Reihenanfrage wird sofort genehmigt und der Bibliothek hinzugefügt, ohne Prüfwarteschlange. Aus = Rollen mit „Anfragen verwalten“ genehmigen oder lehnen jede einzeln ab. Ist zusätzlich <b>Beim Hinzufügen herunterladen</b> (Download-Einstellungen) aktiv, laden automatisch genehmigte Anfragen ihre fehlenden Hefte selbst herunter, unabhängig davon, wer angefragt hat.",
+    "autoApproveNote": "Jede Anfrage wird sofort genehmigt und der Bibliothek hinzugefügt, ohne Prüfwarteschlange, und gleich heruntergeladen, egal wer angefragt hat. Aus = Rollen mit „Anfragen verwalten“ genehmigen oder lehnen jede einzeln ab; eine Genehmigung lädt nur herunter, wenn die genehmigende Person <b>Suchen &amp; herunterladen</b> darf.",
     "westernOnly": "Anfragen: nur westliche Comics",
     "westernOnlyNote": "Nur Reihen westlicher Verlage (USA/UK) lassen sich suchen und anfragen; Manga und fremdsprachige Titel werden ausgeblendet. Nutzt eine Verlags-Positivliste.",
     "noCollections": "Anfragen: keine Sammelbände",
@@ -66,6 +66,7 @@
     "approveTitle": "Genehmigen: fügt die Reihe der Bibliothek hinzu",
     "approveDownloadTitle": "Genehmigen + alle Hefte herunterladen",
     "approveBookTitle": "Genehmigen: sucht den Titel in den Downloadquellen",
+    "approveBookNoDownloadTitle": "Genehmigen: Du darfst nicht herunterladen, daher wird der Titel als verfügbar markiert, sobald ein Scan oder Import ihn bringt",
     "declineTitle": "Mit Begründung ablehnen",
     "deleteTitle": "Diese Anfrage löschen",
     "withdrawTitle": "Anfrage zurückziehen",
@@ -74,7 +75,8 @@
     "downloadFailed": "Download fehlgeschlagen: {error}; wird nach Zeitplan erneut versucht",
     "downloadFailedSource": "Download fehlgeschlagen ({source}): {error}; wird nach Zeitplan erneut versucht",
     "unknownError": "unbekannter Fehler",
-    "approvedNote": "Genehmigt. {note}"
+    "approvedNote": "Genehmigt. {note}",
+    "approvedNoDownload": "Genehmigt. Du darfst nicht herunterladen, daher wurde nichts geholt – der Titel wird als verfügbar markiert, sobald ein Scan oder Import ihn bringt."
   },
   "decline": {
     "placeholder": "Begründung (sieht die anfragende Person)",

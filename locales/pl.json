@@ -5,7 +5,7 @@
   },
   "settings": {
     "autoApprove": "Prośby: automatyczne zatwierdzanie",
-    "autoApproveNote": "Każda prośba o serię jest od razu zatwierdzana i dodawana do biblioteki — bez kolejki do przeglądu. Wyłączone = role z uprawnieniem „Zarządzanie prośbami” zatwierdzają lub odrzucają każdą z nich. Gdy włączona jest też opcja <b>Pobieraj po dodaniu</b> (ustawienia pobierania), automatycznie zatwierdzone prośby same pobierają brakujące zeszyty, niezależnie od tego, kto o nie poprosił.",
+    "autoApproveNote": "Każda prośba jest od razu zatwierdzana i dodawana do biblioteki — bez kolejki do przeglądu — i od razu pobierana, niezależnie od tego, kto o nią poprosił. Wyłączone = role z uprawnieniem „Zarządzanie prośbami” zatwierdzają lub odrzucają każdą z nich; zatwierdzenie pobiera tylko wtedy, gdy zatwierdzający ma uprawnienie <b>Wyszukiwanie i pobieranie</b>.",
     "westernOnly": "Prośby: tylko komiksy zachodnie",
     "westernOnlyNote": "Wyszukiwać i zgłaszać można tylko serie zachodnich wydawców (USA/UK) — manga i tytuły obcojęzyczne są ukryte. Korzysta z listy dozwolonych wydawców.",
     "noCollections": "Prośby: bez wydań zbiorczych",
@@ -68,6 +68,7 @@
     "approveTitle": "Zatwierdź — dodaje serię do biblioteki",
     "approveDownloadTitle": "Zatwierdź i pobierz wszystkie zeszyty",
     "approveBookTitle": "Zatwierdź — szuka jej w twoich źródłach pobierania",
+    "approveBookNoDownloadTitle": "Zatwierdź — nie możesz pobierać, więc pozycja zostanie oznaczona jako dostępna, gdy przyniesie ją skanowanie lub import",
     "declineTitle": "Odrzuć z podaniem powodu",
     "deleteTitle": "Usuń tę prośbę",
     "withdrawTitle": "Wycofaj swoją prośbę",
@@ -76,7 +77,8 @@
     "downloadFailed": "Pobieranie nie powiodło się: {error} — ponowiona próba według harmonogramu",
     "downloadFailedSource": "Pobieranie nie powiodło się ({source}): {error} — ponowiona próba według harmonogramu",
     "unknownError": "nieznany błąd",
-    "approvedNote": "Zatwierdzono. {note}"
+    "approvedNote": "Zatwierdzono. {note}",
+    "approvedNoDownload": "Zatwierdzono. Nie możesz pobierać, więc nic nie zostało pobrane — pozycja zostanie oznaczona jako dostępna, gdy przyniesie ją skanowanie lub import."
   },
   "decline": {
     "placeholder": "Powód (widoczny dla zgłaszającego)",

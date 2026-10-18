@@ -8,6 +8,13 @@ by the maintainers when changes merge, so concurrent PRs don't conflict here.
 
 ## [Unreleased]
 
+### Changed
+
+- **Approved book requests are retried every six hours.** The task that
+  checks whether a request has arrived, and asks the download sources again,
+  had no schedule, so it only ran when started by hand. Change or turn off
+  the schedule under Jobs.
+
 ## [1.5.0] — 2026-10-17
 
 ### Added

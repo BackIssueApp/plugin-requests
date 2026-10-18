@@ -218,6 +218,9 @@ export default function register(api) {
   // hears about it — or the sources are asked again (a new release may have
   // been posted; a failed grab's release is blacklisted, so the next-best is
   // tried). A download already in flight is left alone.
+  // Every six hours unless the Jobs page says otherwise.
+  config.requestsFulfilCron ??= '0 */6 * * *';
+  config.requestsFulfilEnabled ??= true;
   api.registerJob?.({
     id: 'requests-fulfil',
     label: 'Fill approved book requests',

@@ -8,6 +8,8 @@ by the maintainers when changes merge, so concurrent PRs don't conflict here.
 
 ## [Unreleased]
 
+## [1.6.0] — 2026-10-18
+
 ### Changed
 
 - **An approval downloads only when the approver may download.** Approving

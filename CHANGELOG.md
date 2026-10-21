@@ -8,6 +8,8 @@ by the maintainers when changes merge, so concurrent PRs don't conflict here.
 
 ## [Unreleased]
 
+## [1.7.0] — 2026-10-21
+
 ### Added
 
 - **Turn off requests per media type.** New settings, **Requests: no

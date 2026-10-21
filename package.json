@@ -1,6 +1,6 @@
 {
   "name": "backissue-requests",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Requests: users ask for comics, books and audiobooks, curators approve — with votes, notes, and auto-approve",
   "type": "module",
   "private": true,

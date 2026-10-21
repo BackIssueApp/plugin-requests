@@ -71,6 +71,7 @@
 
 /* find & request */
 .rq__searchform { display: flex; gap: 8px; padding: 14px 16px 0; }
+.rq__searchform[hidden] { display: none; }
 .rq__search {
   flex: 1; height: 36px; padding: 0 12px; background: #0b0b10;
   border: 1px solid #2a2a33; border-radius: 8px; color: #ddd; font: 13.5px inherit;

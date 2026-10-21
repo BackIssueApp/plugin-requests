@@ -46,6 +46,10 @@ export default function register(api) {
     requestsAutoApprove: { type: 'bool' }, // every request is approved + added instantly
     requestsWesternOnly: { type: 'bool' }, // only Western-publisher volumes may be requested
     requestsNoCollections: { type: 'bool' }, // block TPBs / hardcovers / omnibuses / other compilations
+    // Per media type: on = that type can't be searched or requested here.
+    requestsNoComics: { type: 'bool' },
+    requestsNoBooks: { type: 'bool' },
+    requestsNoAudiobooks: { type: 'bool' },
   });
 
   // Is this volume requestable under the current policy? "Western only" allows a
@@ -97,12 +101,20 @@ export default function register(api) {
     try { return requireCoreDb().prepare('SELECT id FROM libraries WHERE type=? ORDER BY sort_order, id LIMIT 1').get(type)?.id ?? null; }
     catch { return null; }
   };
+  // Which kinds may be requested: comics unless turned off; books and
+  // audiobooks need their plugin and library too.
   function mediaEnabled() {
     let types = new Set();
     try { types = new Set((pluginLibraryTypes?.() || []).map((t) => t.id)); } catch { /* older core */ }
     const has = (t) => types.has(t) && libraryFor(t) != null;
-    return { ebook: has('ebook'), audiobook: has('audiobook') };
+    return {
+      comic: !config.requestsNoComics,
+      ebook: !config.requestsNoBooks && has('ebook'),
+      audiobook: !config.requestsNoAudiobooks && has('audiobook'),
+    };
   }
+  const KIND_PLURAL = { comic: 'comics', ebook: 'books', audiobook: 'audiobooks' };
+  const kindOff = (res, kind) => res.status(400).json({ error: `${KIND_PLURAL[kind]} can’t be requested on this server` });
   async function bookClient(kind) {
     try {
       if (kind === 'ebook') { const { makeBooksClient } = await import('../ebooks/metadata.js'); return makeBooksClient(config); }
@@ -296,9 +308,9 @@ export default function register(api) {
       pending: store.pendingCount(),
       autoApprove: !!config.requestsAutoApprove,
       canManage: manages(req),
-      // Which kinds may be requested here (comics always; the others only
-      // with their plugin and a library of that type).
-      media: { comic: true, ...mediaEnabled() },
+      // Which kinds may be requested here (each can be turned off in
+      // settings; books and audiobooks also need their plugin and library).
+      media: mediaEnabled(),
     });
   }, { access: CAN_CREATE });
 
@@ -315,10 +327,10 @@ export default function register(api) {
     const q = String(req.query.q || '').trim();
     if (!q) return res.json({ results: [] });
     const kind = kindOf(req.query.kind);
+    if (!mediaEnabled()[kind]) return kindOff(res, kind);
     if (kind !== 'comic') {
       // Books and audiobooks: the metadata service's catalog, annotated the
       // same way (on the shelf already? already asked for?).
-      if (!mediaEnabled()[kind]) return res.status(400).json({ error: `${kind === 'ebook' ? 'books' : 'audiobooks'} can’t be requested on this server` });
       const client = await bookClient(kind);
       if (!client) return res.status(503).json({ error: 'the metadata service is not available' });
       try {
@@ -360,10 +372,10 @@ export default function register(api) {
     remember(req);
     const body = req.body || {};
     const kind = kindOf(body.kind);
+    if (!mediaEnabled()[kind]) return kindOff(res, kind);
     if (kind !== 'comic') {
       // A book or audiobook: the service's own record of it (falling back to
       // what the client saw), deduped by catalog id like volumes are.
-      if (!mediaEnabled()[kind]) return res.status(400).json({ error: `${kind === 'ebook' ? 'books' : 'audiobooks'} can’t be requested on this server` });
       const id = String(body.externalId || '').trim();
       if (!id) return res.status(400).json({ error: 'externalId required' });
       const item = (await lookupItem(kind, id)) || (body.title ? { kind, id, title: String(body.title), author: body.author || null, publisher: null, year: body.year || null, cover: body.cover || null, isbn: body.isbn || null } : null);

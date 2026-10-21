@@ -9,7 +9,13 @@
     "westernOnly": "Richieste: solo fumetti occidentali",
     "westernOnlyNote": "Si possono cercare e richiedere solo serie di editori occidentali (USA/Regno Unito); manga e titoli in lingua straniera sono nascosti. Usa una lista di editori consentiti.",
     "noCollections": "Richieste: niente raccolte",
-    "noCollectionsNote": "Nasconde e blocca le edizioni raccolte (brossurati, cartonati, omnibus, raccolte «Complete» e simili), così si possono richiedere solo serie in albi singoli. Rilevato da titolo e descrizione della serie (il catalogo non ha un campo formato): coglie la stragrande maggioranza, ma non tutto."
+    "noCollectionsNote": "Nasconde e blocca le edizioni raccolte (brossurati, cartonati, omnibus, raccolte «Complete» e simili), così si possono richiedere solo serie in albi singoli. Rilevato da titolo e descrizione della serie (il catalogo non ha un campo formato): coglie la stragrande maggioranza, ma non tutto.",
+    "noComics": "Richieste: niente fumetti",
+    "noComicsNote": "Non è possibile cercare o richiedere fumetti. Le richieste già fatte restano in coda.",
+    "noBooks": "Richieste: niente libri",
+    "noBooksNote": "Non è possibile cercare o richiedere libri. Le richieste già fatte restano in coda.",
+    "noAudiobooks": "Richieste: niente audiolibri",
+    "noAudiobooksNote": "Non è possibile cercare o richiedere audiolibri. Le richieste già fatte restano in coda."
   },
   "kinds": {
     "comic": "Fumetti",
@@ -94,7 +100,8 @@
     "approvedWithNote": "✓ Approvata: {note}",
     "approvedAdded": "✓ Approvata e aggiunta",
     "seconded": "📥 Richiesta esistente sostenuta",
-    "requested": "📥 Richiesto"
+    "requested": "📥 Richiesto",
+    "allOff": "Le richieste sono disattivate per tutti i tipi di media su questo server."
   },
   "_shared": {
     "plugins": {

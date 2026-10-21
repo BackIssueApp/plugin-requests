@@ -317,3 +317,46 @@ test('book approvals download only for an approver who may download', async () =
     try { rm(); } catch { /* the plugin's own connection may hold the file on Windows */ }
   }
 });
+
+test('a media type turned off in settings cannot be searched or requested', async () => {
+  const { openDb } = await import('../../../src/db.js');
+  const { initUserTables } = await import('../../../src/users.js');
+  const register = (await import('../index.js')).default;
+  const config = (await import('../../../src/config.js')).default;
+  const { p: dir, rm } = tmpdir();
+  const oldDbPath = config.dbPath, oldNoComics = config.requestsNoComics;
+  config.dbPath = path.join(dir, 'cat.db');
+  const core = openDb(config.dbPath);
+  initUserTables(core);
+  const routes = new Map();
+  register({
+    registerClientAsset() {}, registerSettings() {}, registerPermission() {}, registerJob() {}, onMediaDownload() {},
+    registerRoute: (m, p, h) => routes.set(`${m} ${p}`, h),
+  });
+  const call = async (key, { query = {}, body = {} } = {}) => {
+    let out, code = 200;
+    const res = { status(c) { code = c; return res; }, json(b) { out = b; return res; } };
+    await routes.get(key)({ user: { id: 0 }, query, body, params: {}, app: { locals: {} } }, res);
+    return { code, out };
+  };
+  try {
+    config.requestsNoComics = true;
+    const list = await call('get /api/requests');
+    assert.equal(list.out.media.comic, false, 'the window hides comics');
+    const search = await call('get /api/requests/search', { query: { q: 'Transmetropolitan' } });
+    assert.equal(search.code, 400);
+    assert.match(search.out.error, /comics can’t be requested/);
+    const create = await call('post /api/requests', { body: { comicvineId: 4242 } });
+    assert.equal(create.code, 400, 'a crafted request is refused too');
+    // Books are off here because no book library exists, whatever the switch says.
+    assert.equal(list.out.media.ebook, false);
+
+    config.requestsNoComics = false;
+    assert.equal((await call('get /api/requests')).out.media.comic, true, 'comics are on by default');
+  } finally {
+    config.requestsNoComics = oldNoComics;
+    core.close();
+    config.dbPath = oldDbPath;
+    try { rm(); } catch { /* the plugin's own connection may hold the file on Windows */ }
+  }
+});

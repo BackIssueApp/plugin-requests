@@ -9,7 +9,13 @@
     "westernOnly": "Demandes : comics occidentaux uniquement",
     "westernOnlyNote": "Seules les séries d’éditeurs occidentaux (États-Unis/Royaume-Uni) peuvent être recherchées et demandées ; les mangas et les titres en langue étrangère sont masqués. Utilise une liste d’éditeurs autorisés.",
     "noCollections": "Demandes : pas de recueils",
-    "noCollectionsNote": "Masque et bloque les éditions reliées (TPB, cartonnés, omnibus, intégrales « Complete » et assimilés) pour ne permettre que les séries en numéros simples. Détecté à partir du titre et de la description de la série (le catalogue n’a pas de champ de format) : la grande majorité est repérée, mais pas tout."
+    "noCollectionsNote": "Masque et bloque les éditions reliées (TPB, cartonnés, omnibus, intégrales « Complete » et assimilés) pour ne permettre que les séries en numéros simples. Détecté à partir du titre et de la description de la série (le catalogue n’a pas de champ de format) : la grande majorité est repérée, mais pas tout.",
+    "noComics": "Demandes : pas de comics",
+    "noComicsNote": "Impossible de rechercher ou de demander des comics. Les demandes déjà faites restent dans la file.",
+    "noBooks": "Demandes : pas de livres",
+    "noBooksNote": "Impossible de rechercher ou de demander des livres. Les demandes déjà faites restent dans la file.",
+    "noAudiobooks": "Demandes : pas de livres audio",
+    "noAudiobooksNote": "Impossible de rechercher ou de demander des livres audio. Les demandes déjà faites restent dans la file."
   },
   "kinds": {
     "comic": "Comics",
@@ -94,7 +100,8 @@
     "approvedWithNote": "✓ Approuvée : {note}",
     "approvedAdded": "✓ Approuvée et ajoutée",
     "seconded": "📥 Demande existante appuyée",
-    "requested": "📥 Demandé"
+    "requested": "📥 Demandé",
+    "allOff": "Les demandes sont désactivées pour tous les types de média sur ce serveur."
   },
   "_shared": {
     "plugins": {

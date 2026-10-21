@@ -9,7 +9,13 @@
     "westernOnly": "Anfragen: nur westliche Comics",
     "westernOnlyNote": "Nur Reihen westlicher Verlage (USA/UK) lassen sich suchen und anfragen; Manga und fremdsprachige Titel werden ausgeblendet. Nutzt eine Verlags-Positivliste.",
     "noCollections": "Anfragen: keine Sammelbände",
-    "noCollectionsNote": "Blendet Sammelbände aus und blockiert sie (Paperbacks, Hardcover, Omnibus-Ausgaben, „Complete“-Sammlungen und Ähnliches), sodass nur Reihen in Einzelheften angefragt werden können. Erkannt anhand von Titel und Beschreibung der Reihe (der Katalog hat kein Formatfeld): trifft die große Mehrheit, aber nicht alles."
+    "noCollectionsNote": "Blendet Sammelbände aus und blockiert sie (Paperbacks, Hardcover, Omnibus-Ausgaben, „Complete“-Sammlungen und Ähnliches), sodass nur Reihen in Einzelheften angefragt werden können. Erkannt anhand von Titel und Beschreibung der Reihe (der Katalog hat kein Formatfeld): trifft die große Mehrheit, aber nicht alles.",
+    "noComics": "Anfragen: keine Comics",
+    "noComicsNote": "Comics können nicht gesucht oder angefragt werden. Bereits gestellte Anfragen bleiben in der Liste.",
+    "noBooks": "Anfragen: keine Bücher",
+    "noBooksNote": "Bücher können nicht gesucht oder angefragt werden. Bereits gestellte Anfragen bleiben in der Liste.",
+    "noAudiobooks": "Anfragen: keine Hörbücher",
+    "noAudiobooksNote": "Hörbücher können nicht gesucht oder angefragt werden. Bereits gestellte Anfragen bleiben in der Liste."
   },
   "kinds": {
     "comic": "Comics",
@@ -94,7 +100,8 @@
     "approvedWithNote": "✓ Genehmigt: {note}",
     "approvedAdded": "✓ Genehmigt & hinzugefügt",
     "seconded": "📥 Bestehende Anfrage unterstützt",
-    "requested": "📥 Angefragt"
+    "requested": "📥 Angefragt",
+    "allOff": "Anfragen sind auf diesem Server für alle Medienarten ausgeschaltet."
   },
   "_shared": {
     "plugins": {

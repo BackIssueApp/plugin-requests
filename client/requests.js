@@ -55,6 +55,11 @@
     // Not a download source — mount in the dedicated Plugins settings tab when
     // the core has one, falling back to the Sources slot on older cores.
     const setSlot = api.slot('settings-plugin-panels') || api.slot('settings-plugin-sources');
+    const kindToggle = (key, label, note) =>
+      '<div class="src-toggle">' +
+        '<label class="switch"><input id="set-' + key + '" type="checkbox"><span class="switch__track"></span></label>' +
+        '<div class="src-toggle__text"><b>' + esc(label) + '</b><span class="modal__note src-toggle__note">' + esc(note) + '</span></div>' +
+      '</div>';
     if (setSlot) {
       const block = document.createElement('div');
       block.className = 'src-block';
@@ -70,7 +75,10 @@
         '<div class="src-toggle">' +
           '<label class="switch"><input id="set-requestsNoCollections" type="checkbox"><span class="switch__track"></span></label>' +
           '<div class="src-toggle__text"><b>' + esc(tr('settings.noCollections', 'Requests: no collections')) + '</b><span class="modal__note src-toggle__note">' + esc(tr('settings.noCollectionsNote', 'Hide and block collected editions — trade paperbacks, hardcovers, omnibuses, “Complete” collections and the like — so only single-issue series can be requested. Detected from the volume’s title and description (the catalog has no format field), so it catches the vast majority but isn’t perfect.')) + '</span></div>' +
-        '</div>';
+        '</div>' +
+        kindToggle('requestsNoComics', tr('settings.noComics', 'Requests: no comics'), tr('settings.noComicsNote', 'Comics can’t be searched or requested. Requests already made stay in the queue.')) +
+        kindToggle('requestsNoBooks', tr('settings.noBooks', 'Requests: no books'), tr('settings.noBooksNote', 'Books can’t be searched or requested. Requests already made stay in the queue.')) +
+        kindToggle('requestsNoAudiobooks', tr('settings.noAudiobooks', 'Requests: no audiobooks'), tr('settings.noAudiobooksNote', 'Audiobooks can’t be searched or requested. Requests already made stay in the queue.'));
       setSlot.appendChild(block);
     }
 
@@ -168,7 +176,13 @@
       const row = overlay?.querySelector('.rq__kinds');
       if (!row) return;
       const kinds = ['comic', 'ebook', 'audiobook'].filter((k) => media[k]);
+      if (!media[kind]) kind = kinds[0] || 'comic';
       row.hidden = kinds.length < 2;
+      // Every kind turned off: nothing to search for, so say so instead.
+      const form = overlay.querySelector('.rq__searchform');
+      form.hidden = !kinds.length;
+      if (!kinds.length) gridEl.innerHTML = '<div class="rq__note rq__note--off">' + esc(tr('find.allOff', 'Requests are turned off for every media type on this server.')) + '</div>';
+      else if (gridEl.querySelector('.rq__note--off')) gridEl.innerHTML = '';
       row.innerHTML = '';
       for (const k of kinds) {
         const b = document.createElement('button');
@@ -178,7 +192,6 @@
         b.onclick = () => { kind = k; paintKinds(); gridEl.innerHTML = ''; overlay.querySelector('.rq__search').placeholder = KIND_HINT[k](); overlay.querySelector('.rq__search').focus(); };
         row.appendChild(b);
       }
-      if (!media[kind]) kind = 'comic';
       overlay.querySelector('.rq__search').placeholder = KIND_HINT[kind]();
     }
 

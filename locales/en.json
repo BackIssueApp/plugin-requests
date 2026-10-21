@@ -9,7 +9,13 @@
     "westernOnly": "Requests: Western comics only",
     "westernOnlyNote": "Only volumes from Western (US/UK) publishers can be searched and requested — manga and foreign-language titles are hidden. Uses a publisher allowlist.",
     "noCollections": "Requests: no collections",
-    "noCollectionsNote": "Hide and block collected editions — trade paperbacks, hardcovers, omnibuses, “Complete” collections and the like — so only single-issue series can be requested. Detected from the volume’s title and description (the catalog has no format field), so it catches the vast majority but isn’t perfect."
+    "noCollectionsNote": "Hide and block collected editions — trade paperbacks, hardcovers, omnibuses, “Complete” collections and the like — so only single-issue series can be requested. Detected from the volume’s title and description (the catalog has no format field), so it catches the vast majority but isn’t perfect.",
+    "noComics": "Requests: no comics",
+    "noComicsNote": "Comics can’t be searched or requested. Requests already made stay in the queue.",
+    "noBooks": "Requests: no books",
+    "noBooksNote": "Books can’t be searched or requested. Requests already made stay in the queue.",
+    "noAudiobooks": "Requests: no audiobooks",
+    "noAudiobooksNote": "Audiobooks can’t be searched or requested. Requests already made stay in the queue."
   },
   "kinds": {
     "comic": "Comics",
@@ -94,7 +100,8 @@
     "approvedWithNote": "✓ Approved — {note}",
     "approvedAdded": "✓ Approved & added",
     "seconded": "📥 Seconded the existing request",
-    "requested": "📥 Requested"
+    "requested": "📥 Requested",
+    "allOff": "Requests are turned off for every media type on this server."
   },
   "_shared": {
     "plugins": {

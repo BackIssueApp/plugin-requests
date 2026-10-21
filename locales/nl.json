@@ -9,7 +9,13 @@
     "westernOnly": "Verzoeken: alleen westerse comics",
     "westernOnlyNote": "Alleen reeksen van westerse uitgevers (VS/VK) kunnen worden gezocht en aangevraagd; manga en anderstalige titels blijven verborgen. Gebruikt een lijst met toegestane uitgevers.",
     "noCollections": "Verzoeken: geen bundels",
-    "noCollectionsNote": "Verbergt en blokkeert verzamelbundels (paperbacks, hardcovers, omnibussen, ‘Complete’-collecties en dergelijke), zodat alleen reeksen met losse nummers aangevraagd kunnen worden. Herkend aan titel en beschrijving van de reeks (de catalogus heeft geen formaatveld): vangt het overgrote deel, maar niet alles."
+    "noCollectionsNote": "Verbergt en blokkeert verzamelbundels (paperbacks, hardcovers, omnibussen, ‘Complete’-collecties en dergelijke), zodat alleen reeksen met losse nummers aangevraagd kunnen worden. Herkend aan titel en beschrijving van de reeks (de catalogus heeft geen formaatveld): vangt het overgrote deel, maar niet alles.",
+    "noComics": "Verzoeken: geen comics",
+    "noComicsNote": "Comics kunnen niet worden gezocht of aangevraagd. Bestaande verzoeken blijven in de wachtrij.",
+    "noBooks": "Verzoeken: geen boeken",
+    "noBooksNote": "Boeken kunnen niet worden gezocht of aangevraagd. Bestaande verzoeken blijven in de wachtrij.",
+    "noAudiobooks": "Verzoeken: geen luisterboeken",
+    "noAudiobooksNote": "Luisterboeken kunnen niet worden gezocht of aangevraagd. Bestaande verzoeken blijven in de wachtrij."
   },
   "kinds": {
     "comic": "Comics",
@@ -94,7 +100,8 @@
     "approvedWithNote": "✓ Goedgekeurd: {note}",
     "approvedAdded": "✓ Goedgekeurd en toegevoegd",
     "seconded": "📥 Bestaand verzoek gesteund",
-    "requested": "📥 Aangevraagd"
+    "requested": "📥 Aangevraagd",
+    "allOff": "Verzoeken staan op deze server uit voor alle mediatypen."
   },
   "_shared": {
     "plugins": {

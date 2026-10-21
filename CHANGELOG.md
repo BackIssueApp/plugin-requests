@@ -8,6 +8,13 @@ by the maintainers when changes merge, so concurrent PRs don't conflict here.
 
 ## [Unreleased]
 
+### Added
+
+- **Turn off requests per media type.** New settings, **Requests: no
+  comics**, **no books** and **no audiobooks**, take that type out of the
+  request window and refuse new requests for it. Requests already made stay
+  in the queue.
+
 ## [1.6.0] — 2026-10-18
 
 ### Changed

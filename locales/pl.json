@@ -9,7 +9,13 @@
     "westernOnly": "Prośby: tylko komiksy zachodnie",
     "westernOnlyNote": "Wyszukiwać i zgłaszać można tylko serie zachodnich wydawców (USA/UK) — manga i tytuły obcojęzyczne są ukryte. Korzysta z listy dozwolonych wydawców.",
     "noCollections": "Prośby: bez wydań zbiorczych",
-    "noCollectionsNote": "Ukrywa i blokuje wydania zbiorcze — wydania w miękkiej i twardej oprawie, omnibusy, kolekcje „Complete” i podobne — tak aby można było zgłaszać tylko serie pojedynczych zeszytów. Rozpoznawane na podstawie tytułu i opisu serii (katalog nie ma pola formatu), więc wyłapuje zdecydowaną większość, ale nie jest doskonałe."
+    "noCollectionsNote": "Ukrywa i blokuje wydania zbiorcze — wydania w miękkiej i twardej oprawie, omnibusy, kolekcje „Complete” i podobne — tak aby można było zgłaszać tylko serie pojedynczych zeszytów. Rozpoznawane na podstawie tytułu i opisu serii (katalog nie ma pola formatu), więc wyłapuje zdecydowaną większość, ale nie jest doskonałe.",
+    "noComics": "Prośby: bez komiksów",
+    "noComicsNote": "Nie można wyszukiwać ani zamawiać: komiksy. Złożone już prośby pozostają w kolejce.",
+    "noBooks": "Prośby: bez książek",
+    "noBooksNote": "Nie można wyszukiwać ani zamawiać: książki. Złożone już prośby pozostają w kolejce.",
+    "noAudiobooks": "Prośby: bez audiobooków",
+    "noAudiobooksNote": "Nie można wyszukiwać ani zamawiać: audiobooki. Złożone już prośby pozostają w kolejce."
   },
   "kinds": {
     "comic": "Komiksy",
@@ -96,7 +102,8 @@
     "approvedWithNote": "✓ Zatwierdzono — {note}",
     "approvedAdded": "✓ Zatwierdzono i dodano",
     "seconded": "📥 Poparto istniejącą prośbę",
-    "requested": "📥 Zgłoszono"
+    "requested": "📥 Zgłoszono",
+    "allOff": "Prośby są wyłączone dla wszystkich typów mediów na tym serwerze."
   },
   "_shared": {
     "plugins": {

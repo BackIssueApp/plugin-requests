@@ -19,12 +19,15 @@ and who can approve are two grantable permissions (*Create requests* /
 flows into the notification centre: reviewers hear about new requests,
 requesters hear about verdicts.
 
-Two options live in **Settings** (the plugin's block in the Sources area):
+These options live in **Settings** (the plugin's block in the Sources area):
 
 - **Auto-approve** — every request is approved and added instantly, no queue.
   It also downloads them, whoever requested them. With it off, an approval
   downloads only when the approver has **Search & download**.
 - **Western comics only** — restrict search and requests to Western (US/UK)
   publishers via an allowlist; manga and foreign-language titles are hidden.
+- **No comics / no books / no audiobooks** — turn off requests for a media
+  type. It disappears from the request window and the server refuses new
+  requests for it; requests already made stay in the queue.
 
 Full guide: <https://backissue.app/requests>

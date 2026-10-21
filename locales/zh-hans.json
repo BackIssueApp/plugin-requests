@@ -9,7 +9,13 @@
     "westernOnly": "请求：仅限欧美漫画",
     "westernOnlyNote": "只能搜索和请求欧美（美国/英国）出版商的系列——日漫和外语作品会被隐藏。使用出版商白名单。",
     "noCollections": "请求：不含合集",
-    "noCollectionsNote": "隐藏并阻止合集版本——平装合集、精装本、大合集、“Complete”全集等——只允许请求单期系列。根据系列标题和简介判断（目录中没有格式字段），能识别绝大多数，但并不完美。"
+    "noCollectionsNote": "隐藏并阻止合集版本——平装合集、精装本、大合集、“Complete”全集等——只允许请求单期系列。根据系列标题和简介判断（目录中没有格式字段），能识别绝大多数，但并不完美。",
+    "noComics": "请求：不含漫画",
+    "noComicsNote": "无法搜索或请求漫画。已提交的请求仍保留在队列中。",
+    "noBooks": "请求：不含图书",
+    "noBooksNote": "无法搜索或请求图书。已提交的请求仍保留在队列中。",
+    "noAudiobooks": "请求：不含有声书",
+    "noAudiobooksNote": "无法搜索或请求有声书。已提交的请求仍保留在队列中。"
   },
   "kinds": {
     "comic": "漫画",
@@ -93,7 +99,8 @@
     "approvedWithNote": "✓ 已批准——{note}",
     "approvedAdded": "✓ 已批准并添加",
     "seconded": "📥 已附议现有请求",
-    "requested": "📥 已请求"
+    "requested": "📥 已请求",
+    "allOff": "此服务器已对所有媒体类型关闭请求。"
   },
   "_shared": {
     "plugins": {
